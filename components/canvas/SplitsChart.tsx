@@ -9,7 +9,6 @@ interface SplitsChartProps {
   element: CanvasElement;
   isSelected: boolean;
   color: string;
-  globalOpacity: number;
   splits: Split[];
   onSelect: () => void;
   onDragMove: (e: any) => void;
@@ -20,7 +19,6 @@ export default function SplitsChart({
   element,
   isSelected,
   color,
-  globalOpacity,
   splits,
   onSelect,
   onDragMove,
@@ -70,7 +68,7 @@ export default function SplitsChart({
       x={element.x}
       y={element.y}
       draggable
-      opacity={element.opacity !== undefined ? element.opacity : globalOpacity}
+      opacity={element.opacity ?? 1}
       onClick={onSelect}
       onTap={onSelect}
       onDragMove={onDragMove}
@@ -84,7 +82,7 @@ export default function SplitsChart({
           y={-2}
           width={w + 4}
           height={h + 4}
-          stroke="#f97316"
+          stroke="#FC4C02"
           strokeWidth={2}
           dash={[8, 4]}
           fill="transparent"

@@ -25,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${nunito.variable} ${inter.variable} bg-[#0F0F0F] text-white`}>
+      <body className={`${nunito.variable} ${inter.variable} bg-[#F5F5F5] text-[#111111]`}>
         {children}
       </body>
     </html>

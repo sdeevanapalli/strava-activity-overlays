@@ -11,12 +11,41 @@ interface ToolbarProps {
   stageRef: React.MutableRefObject<any>;
 }
 
-const DISPLAY_W = 380;
+function PortraitIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
+      <rect
+        x="1" y="1" width="12" height="16" rx="2"
+        stroke={active ? "#FC4C02" : "#6B6B6B"}
+        strokeWidth="1.5"
+        fill={active ? "rgba(252,76,2,0.12)" : "transparent"}
+      />
+    </svg>
+  );
+}
+
+function LandscapeIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+      <rect
+        x="1" y="1" width="16" height="12" rx="2"
+        stroke={active ? "#FC4C02" : "#6B6B6B"}
+        strokeWidth="1.5"
+        fill={active ? "rgba(252,76,2,0.12)" : "transparent"}
+      />
+    </svg>
+  );
+}
 
 export default function Toolbar({ activity, stageRef }: ToolbarProps) {
   const router = useRouter();
-  const { undo, redo, togglePreview, previewMode, history, historyIndex, resetElements, resetAll } =
-    useEditorStore();
+  const {
+    undo, redo, togglePreview, previewMode,
+    history, historyIndex,
+    orientation, setOrientation,
+    resetElements, resetAll,
+  } = useEditorStore();
+
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
 
@@ -24,7 +53,6 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
   const [confirmModal, setConfirmModal] = useState<null | "clear" | "reset">(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -37,56 +65,50 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
 
   const handleExport = async () => {
     if (!stageRef.current) return;
-    await exportCanvas(
-      stageRef.current,
-      DISPLAY_W,
-      activity.name,
-      activity.start_date_local
-    );
+    await exportCanvas(stageRef.current, activity.name, activity.start_date_local);
   };
 
   const handleCopy = async () => {
     if (!stageRef.current) return;
     try {
-      await copyCanvasToClipboard(stageRef.current, DISPLAY_W);
+      await copyCanvasToClipboard(stageRef.current);
       alert("Copied to clipboard!");
-    } catch (err) {
+    } catch {
       alert("Copy failed. Try downloading instead.");
     }
   };
 
-  const handleClearCanvas = () => {
-    setMenuOpen(false);
-    setConfirmModal("clear");
-  };
-
-  const handleResetEverything = () => {
-    setMenuOpen(false);
-    setConfirmModal("reset");
-  };
-
   const handleConfirm = () => {
-    if (confirmModal === "clear") {
-      resetElements();
-    } else if (confirmModal === "reset") {
-      resetAll();
-    }
+    if (confirmModal === "clear") resetElements();
+    else if (confirmModal === "reset") resetAll();
     setConfirmModal(null);
+  };
+
+  const iconBtn: React.CSSProperties = {
+    padding: "6px",
+    borderRadius: 4,
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#6B6B6B",
+    transition: "color 0.15s, background 0.15s",
   };
 
   return (
     <>
       <header
         className="h-14 flex items-center px-4 gap-2 flex-shrink-0"
-        style={{
-          background: "#0A0A0A",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-        }}
+        style={{ background: "#FFFFFF", borderBottom: "1px solid #E5E5E5" }}
       >
         {/* Back */}
         <button
           onClick={() => router.push("/dashboard")}
-          className="p-2 text-gray-400 hover:text-white transition-all"
+          style={iconBtn}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#111111"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
           title="Back to dashboard"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,60 +119,104 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
         {/* Activity name */}
         <div className="flex-1 min-w-0">
           <p
-            className="text-sm font-extrabold text-white truncate"
-            style={{ fontFamily: "var(--font-nunito), sans-serif" }}
+            className="text-sm font-extrabold truncate"
+            style={{ color: "#111111", fontFamily: "var(--font-nunito), sans-serif" }}
           >
             {activity.name}
           </p>
         </div>
 
-        {/* Undo/Redo */}
-        <div className="flex items-center gap-1">
+        {/* Orientation toggle */}
+        <div
+          className="flex items-center gap-1 px-2 py-1"
+          style={{
+            border: "1px solid #E5E5E5",
+            borderRadius: 6,
+            background: "#F5F5F5",
+          }}
+        >
           <button
-            onClick={undo}
-            disabled={!canUndo}
-            className="p-2 text-gray-400 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-            title="Undo (⌘Z)"
+            onClick={() => setOrientation("portrait")}
+            style={{
+              ...iconBtn,
+              background: orientation === "portrait" ? "rgba(252,76,2,0.1)" : "transparent",
+              padding: "4px 6px",
+            }}
+            title="Portrait (1080×1920)"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-            </svg>
+            <PortraitIcon active={orientation === "portrait"} />
           </button>
           <button
-            onClick={redo}
-            disabled={!canRedo}
-            className="p-2 text-gray-400 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-            title="Redo (⌘⇧Z)"
+            onClick={() => setOrientation("landscape")}
+            style={{
+              ...iconBtn,
+              background: orientation === "landscape" ? "rgba(252,76,2,0.1)" : "transparent",
+              padding: "4px 6px",
+            }}
+            title="Landscape (1920×1080)"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6" />
-            </svg>
+            <LandscapeIcon active={orientation === "landscape"} />
           </button>
         </div>
 
-        {/* Separator */}
-        <div className="w-px h-5" style={{ background: "rgba(255,255,255,0.08)" }} />
+        {/* Divider */}
+        <div className="w-px h-5" style={{ background: "#E5E5E5" }} />
+
+        {/* Undo/Redo */}
+        <button
+          onClick={undo}
+          disabled={!canUndo}
+          style={iconBtn}
+          onMouseEnter={(e) => { if (canUndo) (e.currentTarget as HTMLButtonElement).style.color = "#111111"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
+          className="disabled:opacity-30 disabled:cursor-not-allowed"
+          title="Undo (⌘Z)"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+          </svg>
+        </button>
+        <button
+          onClick={redo}
+          disabled={!canRedo}
+          style={iconBtn}
+          onMouseEnter={(e) => { if (canRedo) (e.currentTarget as HTMLButtonElement).style.color = "#111111"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
+          className="disabled:opacity-30 disabled:cursor-not-allowed"
+          title="Redo (⌘⇧Z)"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6" />
+          </svg>
+        </button>
+
+        {/* Divider */}
+        <div className="w-px h-5" style={{ background: "#E5E5E5" }} />
 
         {/* Preview toggle */}
         <button
           onClick={togglePreview}
           className="px-3 py-1.5 text-sm font-medium transition-all"
           style={{
-            background: previewMode ? "#FC4C02" : "transparent",
-            color: previewMode ? "#FFFFFF" : "#9B9B9B",
+            background: previewMode ? "#FC4C02" : "#F5F5F5",
+            color: previewMode ? "#FFFFFF" : "#6B6B6B",
             borderRadius: 4,
+            border: previewMode ? "none" : "1px solid #E5E5E5",
           }}
         >
           {previewMode ? "Editing" : "Preview"}
         </button>
 
-        {/* Separator */}
-        <div className="w-px h-5" style={{ background: "rgba(255,255,255,0.08)" }} />
+        {/* Divider */}
+        <div className="w-px h-5" style={{ background: "#E5E5E5" }} />
 
         {/* Copy */}
         <button
           onClick={handleCopy}
-          className="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-all"
+          className="px-3 py-1.5 text-sm transition-all"
+          style={{ color: "#6B6B6B" }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#111111"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
         >
           Copy
         </button>
@@ -167,14 +233,16 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
           Download
         </button>
 
-        {/* Separator */}
-        <div className="w-px h-5" style={{ background: "rgba(255,255,255,0.08)" }} />
+        {/* Divider */}
+        <div className="w-px h-5" style={{ background: "#E5E5E5" }} />
 
-        {/* More options menu */}
+        {/* More options */}
         <div ref={menuRef} style={{ position: "relative" }}>
           <button
             onClick={() => setMenuOpen((v) => !v)}
-            className="p-2 text-gray-400 hover:text-white transition-all"
+            style={iconBtn}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#111111"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
             title="More options"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -190,26 +258,30 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
                 position: "absolute",
                 right: 0,
                 top: "calc(100% + 8px)",
-                background: "#1A1A1A",
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 4,
+                background: "#FFFFFF",
+                border: "1px solid #E5E5E5",
+                borderRadius: 6,
                 minWidth: 180,
                 zIndex: 50,
                 overflow: "hidden",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
               }}
             >
               <button
-                onClick={handleClearCanvas}
-                className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-all"
+                onClick={() => { setMenuOpen(false); setConfirmModal("clear"); }}
+                className="w-full text-left px-4 py-3 text-sm transition-all"
+                style={{ color: "#111111" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#F5F5F5"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
               >
                 Clear canvas
               </button>
-              <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }} />
+              <div style={{ borderTop: "1px solid #E5E5E5" }} />
               <button
-                onClick={handleResetEverything}
+                onClick={() => { setMenuOpen(false); setConfirmModal("reset"); }}
                 className="w-full text-left px-4 py-3 text-sm transition-all"
                 style={{ color: "#FC4C02" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(252,76,2,0.1)"; }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(252,76,2,0.05)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
               >
                 Reset everything
@@ -225,7 +297,7 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0,0,0,0.7)",
+            background: "rgba(0,0,0,0.3)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -234,18 +306,22 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
         >
           <div
             style={{
-              background: "#1A1A1A",
-              border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 4,
+              background: "#FFFFFF",
+              border: "1px solid #E5E5E5",
+              borderRadius: 8,
               padding: 24,
               maxWidth: 360,
               width: "90%",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
             }}
           >
-            <h3 className="text-white font-bold mb-2" style={{ fontFamily: "var(--font-nunito), sans-serif" }}>
+            <h3
+              className="font-bold mb-2"
+              style={{ color: "#111111", fontFamily: "var(--font-nunito), sans-serif" }}
+            >
               {confirmModal === "clear" ? "Clear canvas?" : "Reset everything?"}
             </h3>
-            <p className="text-sm mb-6" style={{ color: "#9B9B9B" }}>
+            <p className="text-sm mb-6" style={{ color: "#6B6B6B" }}>
               {confirmModal === "clear"
                 ? "All elements will be removed. Your theme settings will be kept. This action can be undone."
                 : "All elements and theme settings will be reset to defaults. This action can be undone."}
@@ -253,11 +329,12 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setConfirmModal(null)}
-                className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-all"
+                className="px-4 py-2 text-sm transition-all"
                 style={{
-                  border: "1px solid rgba(255,255,255,0.2)",
+                  border: "1px solid #E5E5E5",
                   borderRadius: 4,
-                  background: "transparent",
+                  background: "#F5F5F5",
+                  color: "#6B6B6B",
                 }}
               >
                 Cancel

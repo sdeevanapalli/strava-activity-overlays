@@ -22,34 +22,43 @@ export interface CanvasElement {
   visible?: boolean;
 }
 
-// Smart placement helpers
+export const CANVAS_DIMS = {
+  portrait: { width: 1080, height: 1920 },
+  landscape: { width: 1920, height: 1080 },
+} as const;
+
+// Fixed visual scale — display width is always 380/1080 * canvasWidth
+export const BASE_DISPLAY_W = 380;
+
+// Smart placement grid
 const COLS = 3;
 const ROWS = 6;
-const CELL_W = 1080 / COLS; // 360
-const CELL_H = 1920 / ROWS; // 320
 
-function isCellOccupied(col: number, row: number, elements: CanvasElement[]): boolean {
-  const cellX = col * CELL_W + CELL_W / 2;
-  const cellY = row * CELL_H + CELL_H / 2;
+function isCellOccupied(col: number, row: number, canvasW: number, canvasH: number, elements: CanvasElement[]): boolean {
+  const cellW = canvasW / COLS;
+  const cellH = canvasH / ROWS;
+  const cellX = col * cellW + cellW / 2;
+  const cellY = row * cellH + cellH / 2;
   return elements.some((el) => {
     const elCX = el.x + (el.width || 300) / 2;
     const elCY = el.y + (el.height || 80) / 2;
-    return Math.abs(elCX - cellX) < CELL_W / 2 && Math.abs(elCY - cellY) < CELL_H / 2;
+    return Math.abs(elCX - cellX) < cellW / 2 && Math.abs(elCY - cellY) < cellH / 2;
   });
 }
 
-function findNextPosition(elements: CanvasElement[]): { x: number; y: number } {
+function findNextPosition(elements: CanvasElement[], canvasW: number, canvasH: number): { x: number; y: number } {
+  const cellW = canvasW / COLS;
+  const cellH = canvasH / ROWS;
   for (let row = 0; row < ROWS; row++) {
     for (let col = 0; col < COLS; col++) {
-      if (!isCellOccupied(col, row, elements)) {
+      if (!isCellOccupied(col, row, canvasW, canvasH, elements)) {
         return {
-          x: col * CELL_W + 40,
-          y: row * CELL_H + CELL_H / 2 - 40,
+          x: col * cellW + 40,
+          y: row * cellH + cellH / 2 - 40,
         };
       }
     }
   }
-  // All cells full — cascade
   const last = elements[elements.length - 1];
   return last ? { x: last.x + 24, y: last.y + 24 } : { x: 100, y: 100 };
 }
@@ -62,6 +71,7 @@ export interface EditorState {
   customColor: string;
   fontStyle: "clean" | "bold" | "minimal";
   globalOpacity: number;
+  orientation: "portrait" | "landscape";
   history: CanvasElement[][];
   historyIndex: number;
   previewMode: boolean;
@@ -79,6 +89,7 @@ export interface EditorState {
   setCustomColor: (color: string) => void;
   setFontStyle: (style: "clean" | "bold" | "minimal") => void;
   setGlobalOpacity: (opacity: number) => void;
+  setOrientation: (o: "portrait" | "landscape") => void;
   undo: () => void;
   redo: () => void;
   pushHistory: () => void;
@@ -96,6 +107,7 @@ const initialState = {
   customColor: "#ffffff",
   fontStyle: "clean" as const,
   globalOpacity: 1,
+  orientation: "portrait" as const,
   history: [[]],
   historyIndex: 0,
   previewMode: false,
@@ -108,17 +120,15 @@ export const useEditorStore = create<EditorState>()(
 
       addElement: (element) => {
         const state = get();
+        const { width: canvasW, height: canvasH } = CANVAS_DIMS[state.orientation];
         let finalElement = element;
 
-        // Smart placement: if x === -1, auto-place
         if (element.x === -1 && element.type === "stat") {
-          const pos = findNextPosition(state.elements);
+          const pos = findNextPosition(state.elements, canvasW, canvasH);
           finalElement = { ...element, x: pos.x, y: pos.y };
         }
 
-        set((s) => ({
-          elements: [...s.elements, finalElement],
-        }));
+        set((s) => ({ elements: [...s.elements, finalElement] }));
         get().pushHistory();
       },
 
@@ -179,12 +189,28 @@ export const useEditorStore = create<EditorState>()(
 
       setGlobalOpacity: (globalOpacity) => set({ globalOpacity }),
 
+      setOrientation: (o) => {
+        const { orientation, elements } = get();
+        if (o === orientation) return;
+        const from = CANVAS_DIMS[orientation];
+        const to = CANVAS_DIMS[o];
+        const scaleX = to.width / from.width;
+        const scaleY = to.height / from.height;
+        const scaled = elements.map((el) => ({
+          ...el,
+          x: Math.round(el.x * scaleX),
+          y: Math.round(el.y * scaleY),
+        }));
+        set({ orientation: o, elements: scaled });
+        get().pushHistory();
+      },
+
       pushHistory: () => {
         const { elements, history, historyIndex } = get();
         const newHistory = history.slice(0, historyIndex + 1);
         newHistory.push([...elements]);
         set({
-          history: newHistory.slice(-50), // keep last 50
+          history: newHistory.slice(-50),
           historyIndex: Math.min(newHistory.length - 1, 49),
         });
       },
@@ -193,10 +219,7 @@ export const useEditorStore = create<EditorState>()(
         const { history, historyIndex } = get();
         if (historyIndex > 0) {
           const newIndex = historyIndex - 1;
-          set({
-            elements: [...history[newIndex]],
-            historyIndex: newIndex,
-          });
+          set({ elements: [...history[newIndex]], historyIndex: newIndex });
         }
       },
 
@@ -204,10 +227,7 @@ export const useEditorStore = create<EditorState>()(
         const { history, historyIndex } = get();
         if (historyIndex < history.length - 1) {
           const newIndex = historyIndex + 1;
-          set({
-            elements: [...history[newIndex]],
-            historyIndex: newIndex,
-          });
+          set({ elements: [...history[newIndex]], historyIndex: newIndex });
         }
       },
 
@@ -215,17 +235,12 @@ export const useEditorStore = create<EditorState>()(
 
       resetEditor: () => set({ ...initialState, unitSystem: get().unitSystem, theme: get().theme }),
 
-      // Clear elements only, keep theme settings
       resetElements: () => {
         get().pushHistory();
-        set({
-          elements: [],
-          selectedIds: [],
-        });
+        set({ elements: [], selectedIds: [] });
         get().pushHistory();
       },
 
-      // Clear elements AND reset theme to defaults
       resetAll: () => {
         get().pushHistory();
         set({
@@ -235,6 +250,7 @@ export const useEditorStore = create<EditorState>()(
           customColor: "#ffffff",
           fontStyle: "clean",
           globalOpacity: 1,
+          orientation: "portrait",
         });
         get().pushHistory();
       },
@@ -247,6 +263,7 @@ export const useEditorStore = create<EditorState>()(
         customColor: state.customColor,
         fontStyle: state.fontStyle,
         globalOpacity: state.globalOpacity,
+        orientation: state.orientation,
       }),
     }
   )

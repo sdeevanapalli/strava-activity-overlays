@@ -10,7 +10,6 @@ interface MapElementProps {
   element: CanvasElement;
   isSelected: boolean;
   color: string;
-  globalOpacity: number;
   polyline: string;
   streams: StravaStreams | null;
   onSelect: () => void;
@@ -22,7 +21,6 @@ export default function MapElement({
   element,
   isSelected,
   color,
-  globalOpacity,
   polyline,
   streams,
   onSelect,
@@ -35,7 +33,6 @@ export default function MapElement({
 
   useEffect(() => {
     if (!polyline) return;
-
     const coords = decodePolyline(polyline);
     if (!coords || coords.length === 0) return;
 
@@ -47,7 +44,6 @@ export default function MapElement({
     const svgPath = polylineToSvgPath(coords, w, h, 30);
     const points = getStartEndPoints(coords, w, h, 30);
 
-    // Draw path
     const path2d = new Path2D(svgPath);
     ctx.strokeStyle = color;
     ctx.lineWidth = 6;
@@ -55,13 +51,11 @@ export default function MapElement({
     ctx.lineJoin = "round";
     ctx.stroke(path2d);
 
-    // Start dot (green)
     ctx.beginPath();
     ctx.arc(points.start.x, points.start.y, 10, 0, Math.PI * 2);
     ctx.fillStyle = "#22c55e";
     ctx.fill();
 
-    // End dot (red)
     ctx.beginPath();
     ctx.arc(points.end.x, points.end.y, 10, 0, Math.PI * 2);
     ctx.fillStyle = "#ef4444";
@@ -75,19 +69,13 @@ export default function MapElement({
       x={element.x}
       y={element.y}
       draggable
-      opacity={element.opacity !== undefined ? element.opacity : globalOpacity}
+      opacity={element.opacity ?? 1}
       onClick={onSelect}
       onTap={onSelect}
       onDragMove={onDragMove}
       onDragEnd={onDragEnd}
     >
-      {image && (
-        <Image
-          image={image}
-          width={w}
-          height={h}
-        />
-      )}
+      {image && <Image image={image} width={w} height={h} />}
 
       {!image && (
         <Rect
@@ -105,7 +93,7 @@ export default function MapElement({
           y={-2}
           width={w + 4}
           height={h + 4}
-          stroke="#f97316"
+          stroke="#FC4C02"
           strokeWidth={2}
           dash={[8, 4]}
           fill="transparent"
