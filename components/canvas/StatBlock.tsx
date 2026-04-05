@@ -2,6 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import Konva from "konva";
+import type { KonvaEventObject } from "konva/lib/Node";
 import { Group, Text, Rect } from "react-konva";
 import type { CanvasElement } from "@/store/editorStore";
 
@@ -14,8 +15,8 @@ interface StatBlockProps {
   value: string;
   canvasWidth: number;
   onSelect: () => void;
-  onDragMove: (e: any) => void;
-  onDragEnd: (e: any) => void;
+  onDragMove: (e: KonvaEventObject<DragEvent>) => void;
+  onDragEnd: (e: KonvaEventObject<DragEvent>) => void;
 }
 
 const H_PAD  = 24;  // horizontal padding per side (inside block)
@@ -78,7 +79,7 @@ export default function StatBlock({
   onDragMove,
   onDragEnd,
 }: StatBlockProps) {
-  const groupRef = useRef<any>(null);
+  const groupRef = useRef<Konva.Group>(null);
 
   // ── Layout constants derived from fontSize ────────────────────────────────
   const requestedSize  = element.fontSize || 80;

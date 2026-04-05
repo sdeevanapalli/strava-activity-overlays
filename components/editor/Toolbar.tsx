@@ -2,13 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import type Konva from "konva";
 import type { StravaActivity } from "@/types/strava";
 import { useEditorStore } from "@/store/editorStore";
+import { useUIStore } from "@/store/uiStore";
 import { exportCanvas, copyCanvasToClipboard } from "@/lib/canvas-export";
 
 interface ToolbarProps {
   activity: StravaActivity;
-  stageRef: React.MutableRefObject<any>;
+  stageRef: React.MutableRefObject<Konva.Stage | null>;
 }
 
 function PortraitIcon({ active }: { active: boolean }) {
@@ -45,6 +47,7 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
     orientation, setOrientation,
     resetElements, resetAll,
   } = useEditorStore();
+  const { pushToast } = useUIStore();
 
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
@@ -66,15 +69,16 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
   const handleExport = async () => {
     if (!stageRef.current) return;
     await exportCanvas(stageRef.current, activity.name, activity.start_date_local);
+    pushToast("Downloaded PNG overlay.", "success");
   };
 
   const handleCopy = async () => {
     if (!stageRef.current) return;
     try {
       await copyCanvasToClipboard(stageRef.current);
-      alert("Copied to clipboard!");
+      pushToast("Copied PNG to clipboard.", "success");
     } catch {
-      alert("Copy failed. Try downloading instead.");
+      pushToast("Copy failed. Try downloading instead.", "error");
     }
   };
 

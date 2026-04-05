@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Group, Image, Rect } from "react-konva";
+import type { KonvaEventObject } from "konva/lib/Node";
 import type { CanvasElement } from "@/store/editorStore";
-import type { StravaStreams } from "@/types/strava";
 import { decodePolyline, polylineToSvgPath, getStartEndPoints } from "@/lib/polyline";
 
 interface MapElementProps {
@@ -11,10 +11,9 @@ interface MapElementProps {
   isSelected: boolean;
   color: string;
   polyline: string;
-  streams: StravaStreams | null;
   onSelect: () => void;
-  onDragMove: (e: any) => void;
-  onDragEnd: (e: any) => void;
+  onDragMove: (e: KonvaEventObject<DragEvent>) => void;
+  onDragEnd: (e: KonvaEventObject<DragEvent>) => void;
 }
 
 export default function MapElement({
@@ -22,19 +21,17 @@ export default function MapElement({
   isSelected,
   color,
   polyline,
-  streams,
   onSelect,
   onDragMove,
   onDragEnd,
 }: MapElementProps) {
-  const [image, setImage] = useState<HTMLCanvasElement | null>(null);
   const w = element.width || 600;
   const h = element.height || 600;
 
-  useEffect(() => {
-    if (!polyline) return;
+  const image = useMemo(() => {
+    if (!polyline) return null;
     const coords = decodePolyline(polyline);
-    if (!coords || coords.length === 0) return;
+    if (!coords || coords.length === 0) return null;
 
     const canvas = document.createElement("canvas");
     canvas.width = w;
@@ -61,7 +58,7 @@ export default function MapElement({
     ctx.fillStyle = "#ef4444";
     ctx.fill();
 
-    setImage(canvas);
+    return canvas;
   }, [polyline, color, w, h]);
 
   return (
@@ -75,6 +72,7 @@ export default function MapElement({
       onDragMove={onDragMove}
       onDragEnd={onDragEnd}
     >
+      {/* eslint-disable-next-line jsx-a11y/alt-text */}
       {image && <Image image={image} width={w} height={h} />}
 
       {!image && (

@@ -2,7 +2,9 @@
 
 import { useCallback, useState } from "react";
 import { Stage, Layer } from "react-konva";
-import type { StravaActivity, StravaStreams } from "@/types/strava";
+import type Konva from "konva";
+import type { KonvaEventObject } from "konva/lib/Node";
+import type { StravaActivity } from "@/types/strava";
 import { useEditorStore, CANVAS_DIMS, BASE_DISPLAY_W } from "@/store/editorStore";
 import StatBlock from "./StatBlock";
 import MapElement from "./MapElement";
@@ -12,9 +14,8 @@ import { computeSnap, type SnapLine } from "@/lib/snap";
 import { formatDistance, formatTime, formatPace, formatSpeed, formatElevation, formatDate } from "@/lib/units";
 
 interface CanvasStageProps {
-  stageRef: React.MutableRefObject<any>;
+  stageRef: React.MutableRefObject<Konva.Stage | null>;
   activity: StravaActivity;
-  streams: StravaStreams | null;
 }
 
 function getActivityValue(
@@ -44,7 +45,7 @@ function getActivityValue(
   }
 }
 
-export default function CanvasStage({ stageRef, activity, streams }: CanvasStageProps) {
+export default function CanvasStage({ stageRef, activity }: CanvasStageProps) {
   const {
     elements,
     selectedIds,
@@ -74,20 +75,52 @@ export default function CanvasStage({ stageRef, activity, streams }: CanvasStage
     return customColor;
   }, [theme, customColor]);
 
-  const getFontFamily = useCallback(() => "Inter, sans-serif", []);
+  const getFontFamily = useCallback(() => {
+    if (fontStyle === "sport") return "Space Grotesk, Inter, sans-serif";
+    if (fontStyle === "mono") return "Space Mono, monospace";
+    if (fontStyle === "display") return "Bebas Neue, Inter, sans-serif";
+    return "Inter, sans-serif";
+  }, [fontStyle]);
 
   const getFontWeight = useCallback(() => {
     if (fontStyle === "bold") return "bold";
     if (fontStyle === "minimal") return "300";
+    if (fontStyle === "sport") return "700";
+    if (fontStyle === "mono") return "400";
+    if (fontStyle === "display") return "700";
     return "normal";
   }, [fontStyle]);
 
   const handleDragMove = useCallback(
-    (e: any, id: string) => {
-      const node = e.target;
+    (e: KonvaEventObject<DragEvent>, id: string) => {
+      const node = e.target as Konva.Group;
       const el = elements.find((el) => el.id === id);
-      const w = el?.width ?? (node.width() > 0 ? node.width() * node.scaleX() : 300);
-      const h = el?.height ?? (node.height() > 0 ? node.height() * node.scaleY() : 100);
+
+      // Prefer rendered bounds so snapping always uses the real on-canvas size,
+      // including dynamic stat blocks whose width changes with text/font size.
+      const children: Konva.Node[] = node.getChildren();
+      const measurableChildren = children.filter((child: Konva.Node) =>
+        typeof child.listening === "function" ? child.listening() !== false : true
+      );
+      const boundsSource = measurableChildren.length > 0 ? measurableChildren : [node];
+      type ClientRect = ReturnType<Konva.Node["getClientRect"]>;
+      const bounds = boundsSource
+        .map((target: Konva.Node) => target.getClientRect({ skipTransform: true, skipStroke: true, skipShadow: true }))
+        .reduce(
+          (acc: { minX: number; minY: number; maxX: number; maxY: number }, rect: ClientRect) => ({
+            minX: Math.min(acc.minX, rect.x),
+            minY: Math.min(acc.minY, rect.y),
+            maxX: Math.max(acc.maxX, rect.x + rect.width),
+            maxY: Math.max(acc.maxY, rect.y + rect.height),
+          }),
+          { minX: Number.POSITIVE_INFINITY, minY: Number.POSITIVE_INFINITY, maxX: Number.NEGATIVE_INFINITY, maxY: Number.NEGATIVE_INFINITY }
+        );
+
+      const measuredW = Number.isFinite(bounds.minX) ? Math.max(0, bounds.maxX - bounds.minX) : 0;
+      const measuredH = Number.isFinite(bounds.minY) ? Math.max(0, bounds.maxY - bounds.minY) : 0;
+
+      const w = measuredW > 0 ? measuredW : (el?.width ?? (node.width() > 0 ? node.width() * node.scaleX() : 300));
+      const h = measuredH > 0 ? measuredH : (el?.height ?? (node.height() > 0 ? node.height() * node.scaleY() : 100));
 
       const result = computeSnap(
         { x: node.x(), y: node.y() },
@@ -105,7 +138,7 @@ export default function CanvasStage({ stageRef, activity, streams }: CanvasStage
   );
 
   const handleDragEnd = useCallback(
-    (e: any, id: string) => {
+    (e: KonvaEventObject<DragEvent>, id: string) => {
       setActiveSnaps([]);
       updateElement(id, { x: e.target.x(), y: e.target.y() });
       pushHistory();
@@ -179,7 +212,6 @@ export default function CanvasStage({ stageRef, activity, streams }: CanvasStage
                   isSelected={isSelected}
                   color={color}
                   polyline={activity.map?.summary_polyline || ""}
-                  streams={streams}
                   onSelect={() => selectElement(el.id)}
                   onDragMove={(e) => handleDragMove(e, el.id)}
                   onDragEnd={(e) => handleDragEnd(e, el.id)}

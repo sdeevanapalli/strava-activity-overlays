@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useEditorStore } from "@/store/editorStore";
+import { useUIStore } from "@/store/uiStore";
 import {
   loadThemes,
   saveTheme,
@@ -56,6 +57,7 @@ export default function RightPanel() {
     setTheme, setCustomColor, setFontStyle, setGlobalOpacity, setUnitSystem,
     updateElement, removeElement, duplicateElement,
   } = useEditorStore();
+  const { pushToast } = useUIStore();
 
   const selectedElement = selectedIds.length === 1
     ? elements.find((el) => el.id === selectedIds[0])
@@ -64,6 +66,8 @@ export default function RightPanel() {
   const [themes, setThemes] = useState<ThemePreset[]>(DEFAULT_THEMES);
 
   useEffect(() => {
+    // Load custom themes from localStorage after hydration
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setThemes(loadThemes());
   }, []);
 
@@ -73,11 +77,15 @@ export default function RightPanel() {
     else { setTheme("custom"); setCustomColor(t.textColor); }
     setFontStyle(t.fontStyle);
     setGlobalOpacity(t.opacity);
+    pushToast(`Applied theme: ${t.name}`, "success");
   };
 
   const handleSaveTheme = () => {
     const name = window.prompt("Name this theme:");
-    if (!name?.trim()) return;
+    if (!name?.trim()) {
+      pushToast("Theme save cancelled.", "info");
+      return;
+    }
     const newTheme: ThemePreset = {
       id: `custom-${Date.now()}`,
       name: name.trim(),
@@ -92,11 +100,14 @@ export default function RightPanel() {
     };
     saveTheme(newTheme);
     setThemes(loadThemes());
+    pushToast(`Saved theme: ${newTheme.name}`, "success");
   };
 
   const handleDeleteTheme = (id: string) => {
+    const themeToDelete = themes.find((t) => t.id === id);
     deleteTheme(id);
     setThemes(loadThemes());
+    pushToast(`Deleted theme: ${themeToDelete?.name ?? "custom theme"}`, "info");
   };
 
   const isDefault = (id: string) => DEFAULT_THEMES.some((t) => t.id === id);
@@ -182,11 +193,11 @@ export default function RightPanel() {
             {selectedElement.type === "stat" && (
               <div>
                 <label className="text-xs mb-1 block" style={{ color: "#6B6B6B" }}>
-                  Font Size: {selectedElement.fontSize || 48}px
+                  Font Size: {selectedElement.fontSize || 80}px
                 </label>
                 <input
                   type="range" min={20} max={300}
-                  value={selectedElement.fontSize || 48}
+                  value={selectedElement.fontSize || 80}
                   onChange={(e) => updateElement(selectedElement.id, { fontSize: Number(e.target.value) })}
                   className="w-full accent-[#FC4C02]"
                 />
@@ -288,9 +299,16 @@ export default function RightPanel() {
       {/* ── FONT STYLE ─────────────────────────── */}
       <div>
         <span style={SECTION_LABEL}>Font Style</span>
-        <div className="grid grid-cols-3 gap-1.5">
-          {(["clean", "bold", "minimal"] as const).map((f) => (
-            <button key={f} onClick={() => setFontStyle(f)} style={chipBtn(fontStyle === f)}>{f}</button>
+        <div className="grid grid-cols-2 gap-1.5">
+          {([
+            { key: "clean", label: "Clean" },
+            { key: "bold", label: "Bold" },
+            { key: "minimal", label: "Minimal" },
+            { key: "sport", label: "Sport" },
+            { key: "mono", label: "Mono" },
+            { key: "display", label: "Display" },
+          ] as const).map((f) => (
+            <button key={f.key} onClick={() => setFontStyle(f.key)} style={chipBtn(fontStyle === f.key)}>{f.label}</button>
           ))}
         </div>
       </div>

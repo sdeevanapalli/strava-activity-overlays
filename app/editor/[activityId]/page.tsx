@@ -24,5 +24,5 @@ export default async function EditorPage({
     redirect("/dashboard");
   }
 
-  return <EditorClient activity={activity} streams={streams} />;
+  return <EditorClient activity={activity} />;
 }

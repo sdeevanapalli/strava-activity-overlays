@@ -1,7 +1,8 @@
 "use client";
 
 import { useEditorStore } from "@/store/editorStore";
-import type { StravaActivity, StravaStreams } from "@/types/strava";
+import { useUIStore } from "@/store/uiStore";
+import type { StravaActivity } from "@/types/strava";
 import type { CanvasElement } from "@/store/editorStore";
 
 interface StatChip {
@@ -32,7 +33,12 @@ const STAT_CHIPS: StatChip[] = [
 
 interface LeftPanelProps {
   activity: StravaActivity;
-  streams: StravaStreams | null;
+}
+
+let elementIdCounter = 0;
+function makeElementId(prefix: string) {
+  elementIdCounter += 1;
+  return `${prefix}-${elementIdCounter}`;
 }
 
 const SECTION_LABEL: React.CSSProperties = {
@@ -45,18 +51,19 @@ const SECTION_LABEL: React.CSSProperties = {
   display: "block",
 };
 
-export default function LeftPanel({ activity, streams }: LeftPanelProps) {
+export default function LeftPanel({ activity }: LeftPanelProps) {
   const { addElement } = useEditorStore();
+  const { pushToast } = useUIStore();
 
   const handleAddStat = (chip: StatChip) => {
     const newEl: CanvasElement = {
-      id: `${chip.key}-${Date.now()}`,
+      id: makeElementId(chip.key),
       type: "stat",
       statKey: chip.key,
       label: chip.label.toUpperCase(),
       x: -1,
       y: -1,
-      fontSize: 48,
+      fontSize: 80,
       opacity: 1,
       background: "none",
     };
@@ -65,11 +72,11 @@ export default function LeftPanel({ activity, streams }: LeftPanelProps) {
 
   const handleAddMap = () => {
     if (!activity.map?.summary_polyline) {
-      alert("No GPS data available for this activity.");
+      pushToast("No GPS data available for this activity.", "error");
       return;
     }
     const newEl: CanvasElement = {
-      id: `map-${Date.now()}`,
+      id: makeElementId("map"),
       type: "map",
       x: (1080 - 600) / 2,
       y: (1920 - 600) / 2,
@@ -81,11 +88,11 @@ export default function LeftPanel({ activity, streams }: LeftPanelProps) {
 
   const handleAddSplits = () => {
     if (!activity.splits_metric?.length) {
-      alert("No splits data available for this activity.");
+      pushToast("No splits data available for this activity.", "error");
       return;
     }
     const newEl: CanvasElement = {
-      id: `splits-${Date.now()}`,
+      id: makeElementId("splits"),
       type: "splits",
       x: 100,
       y: 1600,

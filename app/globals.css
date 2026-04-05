@@ -19,6 +19,9 @@
   --color-foreground: var(--foreground);
   --font-nunito: var(--font-nunito);
   --font-inter: var(--font-inter);
+  --font-space-grotesk: var(--font-space-grotesk);
+  --font-space-mono: var(--font-space-mono);
+  --font-bebas-neue: var(--font-bebas-neue);
 }
 
 body {

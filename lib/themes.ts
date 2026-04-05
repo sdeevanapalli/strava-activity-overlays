@@ -1,9 +1,12 @@
+import type { FontStylePreset } from "@/store/editorStore";
+import type { CanvasElement } from "@/store/editorStore";
+
 export type ThemePreset = {
   id: string;
   name: string;
   createdAt: number;
   textColor: string;
-  fontStyle: 'clean' | 'bold' | 'minimal';
+  fontStyle: FontStylePreset;
   fontSize: number;
   opacity: number;
   elementBackground: 'none' | 'frosted' | 'solid';
@@ -14,7 +17,7 @@ export type ThemePreset = {
 export type ActivityPreset = {
   activityId: string;
   themeId: string;
-  elements: any[]; // CanvasElement[]
+  elements: CanvasElement[];
   savedAt: number;
 };
 

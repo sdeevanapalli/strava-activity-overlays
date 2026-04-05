@@ -22,6 +22,8 @@ export interface CanvasElement {
   visible?: boolean;
 }
 
+export type FontStylePreset = "clean" | "bold" | "minimal" | "sport" | "mono" | "display";
+
 export const CANVAS_DIMS = {
   portrait: { width: 1080, height: 1920 },
   landscape: { width: 1920, height: 1080 },
@@ -69,7 +71,7 @@ export interface EditorState {
   unitSystem: UnitSystem;
   theme: "white" | "black" | "custom";
   customColor: string;
-  fontStyle: "clean" | "bold" | "minimal";
+  fontStyle: FontStylePreset;
   globalOpacity: number;
   orientation: "portrait" | "landscape";
   history: CanvasElement[][];
@@ -87,7 +89,7 @@ export interface EditorState {
   setUnitSystem: (unit: UnitSystem) => void;
   setTheme: (theme: "white" | "black" | "custom") => void;
   setCustomColor: (color: string) => void;
-  setFontStyle: (style: "clean" | "bold" | "minimal") => void;
+  setFontStyle: (style: FontStylePreset) => void;
   setGlobalOpacity: (opacity: number) => void;
   setOrientation: (o: "portrait" | "landscape") => void;
   undo: () => void;
