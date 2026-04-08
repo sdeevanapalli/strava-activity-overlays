@@ -45,7 +45,7 @@ export async function exportCanvas(
 
   const sanitizedName = activityName.replace(/[^a-z0-9]/gi, "-").toLowerCase();
   const sanitizedDate = date.split("T")[0];
-  const filename = `stravacanvas-${sanitizedName}-${sanitizedDate}.png`;
+  const filename = `ActivityOverlays-${sanitizedName}-${sanitizedDate}.png`;
 
   const link = document.createElement("a");
   link.download = filename;

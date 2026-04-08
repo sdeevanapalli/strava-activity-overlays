@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { setSessionCookie } from "@/lib/session";
 
+type StravaTokenResponse = {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+  athlete: {
+    id: number;
+    firstname?: string;
+    lastname?: string;
+    profile_medium?: string;
+    profile?: string;
+  };
+};
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
@@ -25,7 +38,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Exchange code for tokens directly with Strava
-  let tokenData: any;
+  let tokenData: StravaTokenResponse;
   try {
     const tokenRes = await fetch("https://www.strava.com/oauth/token", {
       method: "POST",
@@ -44,7 +57,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${baseUrl}/?error=token_exchange_failed`);
     }
 
-    tokenData = await tokenRes.json();
+    tokenData = (await tokenRes.json()) as StravaTokenResponse;
   } catch (err) {
     console.error("Token exchange fetch error:", err);
     return NextResponse.redirect(`${baseUrl}/?error=token_exchange_failed`);

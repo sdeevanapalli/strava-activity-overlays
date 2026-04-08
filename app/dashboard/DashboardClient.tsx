@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useEditorStore } from "@/store/editorStore";
@@ -47,6 +48,7 @@ function ActivityRow({ activity }: { activity: StravaActivity }) {
   return (
     <button
       onClick={handleClick}
+      aria-label={`Edit activity ${activity.name}`}
       className="w-full text-left transition-all"
       style={{
         background: "#FFFFFF",
@@ -146,7 +148,7 @@ export default function DashboardClient() {
     setLoading(true);
     setPage(1);
     fetchActivities(1, true);
-  }, []);
+  }, [fetchActivities]);
 
   const loadMore = () => {
     const nextPage = page + 1;
@@ -169,7 +171,7 @@ export default function DashboardClient() {
             className="text-xl font-extrabold"
             style={{ color: "#111111", fontFamily: "var(--font-nunito), sans-serif" }}
           >
-            StravaCanvas
+            ActivityOverlays
           </h1>
           <button
             onClick={() => router.push("/api/auth/signout")}
@@ -178,7 +180,7 @@ export default function DashboardClient() {
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#111111"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
           >
-            Sign out
+            Disconnect Strava
           </button>
         </div>
       </header>
@@ -239,6 +241,20 @@ export default function DashboardClient() {
           </>
         )}
       </main>
+
+      <footer className="border-t border-[#E5E5E5] bg-white">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex flex-col items-center gap-2 text-xs text-[#6B6B6B] sm:flex-row sm:justify-between">
+          <p>RideBuddy</p>
+          <div className="flex items-center gap-4">
+            <Link href="/privacy" className="font-medium hover:text-[#111111]">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="font-medium hover:text-[#111111]">
+              Terms of Service
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

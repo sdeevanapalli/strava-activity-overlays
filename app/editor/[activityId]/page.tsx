@@ -1,7 +1,13 @@
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
-import { getActivity, getActivityStreams } from "@/lib/strava";
+import { getActivity } from "@/lib/strava";
 import EditorClient from "./EditorClient";
+export const metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function EditorPage({
   params,
@@ -12,17 +18,12 @@ export default async function EditorPage({
   if (!session) redirect("/");
 
   const { activityId } = await params;
-  let activity = null;
-  let streams = null;
 
-  try {
-    [activity, streams] = await Promise.all([
-      getActivity(activityId),
-      getActivityStreams(activityId).catch(() => null),
-    ]);
-  } catch {
+  const activity = await getActivity(activityId).catch(() => null);
+  if (!activity) {
     redirect("/dashboard");
   }
 
   return <EditorClient activity={activity} />;
+
 }

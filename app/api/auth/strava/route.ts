@@ -1,13 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { cookies } from "next/headers";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   // Generate a random state value for CSRF protection
   const state = crypto.randomBytes(16).toString("hex");
-
-  // Store state in a short-lived cookie to verify on callback
-  const cookieStore = await cookies();
 
   const params = new URLSearchParams({
     client_id: process.env.STRAVA_CLIENT_ID!,

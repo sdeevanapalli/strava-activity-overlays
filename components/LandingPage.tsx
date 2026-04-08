@@ -1,15 +1,9 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ConnectButton, PoweredByStrava } from "@/components/branding/StravaBranding";
 
 export default function LandingPage() {
-  const router = useRouter();
-
   return (
-    <main
-      className="min-h-screen flex flex-col items-center justify-center p-8"
-      style={{ background: "#F5F5F5", position: "relative", overflow: "hidden" }}
-    >
+    <main className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#F5F5F5] px-6 py-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-8">
       {/* Faint route-line background pattern */}
       <div
         aria-hidden="true"
@@ -47,47 +41,42 @@ export default function LandingPage() {
         </svg>
       </div>
 
-      <div className="max-w-xl w-full text-center space-y-8" style={{ position: "relative", zIndex: 1 }}>
-        <div className="space-y-4">
-          <h1
-            className="text-7xl font-extrabold"
-            style={{ color: "#111111", fontFamily: "var(--font-nunito), sans-serif" }}
-          >
-            Your run.
-            <br />
-            Your story.
-          </h1>
-          <p className="text-xl" style={{ color: "#6B6B6B" }}>
-            Custom overlays for Instagram Stories. Built for Strava athletes.
-          </p>
-        </div>
+      <div className="relative z-10 flex flex-1 items-center justify-center">
+        <div className="w-full max-w-xl space-y-8 text-center">
+          <div className="space-y-4">
+            <h1
+              className="text-5xl font-extrabold text-[#111111] sm:text-6xl lg:text-7xl"
+              style={{ fontFamily: "var(--font-nunito), sans-serif" }}
+            >
+              Your run.
+              <br />
+              Your story.
+            </h1>
+            <p className="mx-auto max-w-md text-base text-[#6B6B6B] sm:text-lg lg:text-xl">
+              Custom overlays for social media. Built for Strava athletes.
+            </p>
+          </div>
 
-        <div className="flex flex-col items-center gap-3">
-          <button
-            onClick={() => router.push("/api/auth/strava")}
-            className="inline-flex items-center gap-3 text-white font-bold px-8 py-4 text-lg transition-all"
-            style={{
-              background: "#FC4C02",
-              borderRadius: 0,
-              filter: "brightness(1)",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.filter = "brightness(1.1)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.filter = "brightness(1)";
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
-            </svg>
-            Connect with Strava
-          </button>
-          <p className="text-sm" style={{ color: "#6B6B6B" }}>
-            Read-only access · No data stored
-          </p>
+          <div className="flex flex-col items-center gap-3">
+            <ConnectButton theme="orange" className="mx-auto" />
+            <p className="text-sm text-[#6B6B6B]">Read-only access · No data stored</p>
+          </div>
         </div>
       </div>
+
+      <footer className="relative z-10 mt-10 flex items-end justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <PoweredByStrava color="black" className="origin-center scale-[0.45] sm:scale-[0.55]" />
+          <div className="flex items-center gap-4 text-xs text-[#6B6B6B]">
+            <Link href="/privacy" className="font-medium hover:text-[#111111]">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="font-medium hover:text-[#111111]">
+              Terms of Service
+            </Link>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

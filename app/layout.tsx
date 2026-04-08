@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Inter, Nunito, Space_Grotesk, Space_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -30,9 +30,53 @@ const bebasNeue = Bebas_Neue({
   weight: ["400"],
 });
 
+const siteUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Strava Activity Overlays",
-  description: "Create beautiful transparent PNG overlays from your Strava activities",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "ActivityOverlays",
+    template: "%s | ActivityOverlays",
+  },
+  description: "Create beautiful transparent PNG overlays and insights from your Strava activities",
+  applicationName: "ActivityOverlays",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png" }],
+    apple: [{ url: "/favicon.png", type: "image/png", sizes: "any" }],
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    title: "ActivityOverlays",
+    description: "Create beautiful transparent PNG overlays and insights from your Strava activities",
+    siteName: "ActivityOverlays",
+    images: [
+      {
+        url: "/favicon.png",
+        width: 686,
+        height: 642,
+        alt: "ActivityOverlays",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ActivityOverlays",
+    description: "Create beautiful transparent PNG overlays and insights from your Strava activities",
+    images: ["/favicon.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#FC5200",
 };
 
 export default function RootLayout({

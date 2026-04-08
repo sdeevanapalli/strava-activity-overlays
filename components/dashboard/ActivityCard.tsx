@@ -34,6 +34,7 @@ export default function ActivityCard({ activity }: { activity: StravaActivity })
   return (
     <button
       onClick={() => router.push(`/editor/${activity.id}`)}
+      aria-label={`Edit ${activity.name}`}
       className="w-full text-left bg-white/5 hover:bg-white/10 border border-white/10 hover:border-orange-500/50 rounded-2xl p-4 transition-all group"
     >
       <div className="flex items-center gap-4">
