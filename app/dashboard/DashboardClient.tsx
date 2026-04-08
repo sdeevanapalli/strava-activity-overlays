@@ -244,7 +244,6 @@ export default function DashboardClient() {
 
       <footer className="border-t border-[#E5E5E5] bg-white">
         <div className="max-w-4xl mx-auto px-4 py-4 flex flex-col items-center gap-2 text-xs text-[#6B6B6B] sm:flex-row sm:justify-between">
-          <p>RideBuddy</p>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="font-medium hover:text-[#111111]">
               Privacy Policy
