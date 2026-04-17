@@ -104,7 +104,7 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
   return (
     <>
       <header
-        className="h-14 flex items-center px-4 gap-2 flex-shrink-0"
+        className="h-14 flex items-center px-3 gap-1.5 flex-shrink-0 sm:px-4 sm:gap-2"
         style={{ background: "#FFFFFF", borderBottom: "1px solid #E5E5E5" }}
       >
         {/* Back */}
@@ -130,9 +130,9 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
           </p>
         </div>
 
-        {/* Orientation toggle */}
+        {/* Orientation toggle — hidden on small screens */}
         <div
-          className="flex items-center gap-1 px-2 py-1"
+          className="hidden sm:flex items-center gap-1 px-2 py-1"
           style={{
             border: "1px solid #E5E5E5",
             borderRadius: 6,
@@ -163,17 +163,17 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
           </button>
         </div>
 
-        {/* Divider */}
-        <div className="w-px h-5" style={{ background: "#E5E5E5" }} />
+        {/* Divider — desktop only */}
+        <div className="hidden sm:block w-px h-5" style={{ background: "#E5E5E5" }} />
 
-        {/* Undo/Redo */}
+        {/* Undo/Redo — hidden on small screens */}
         <button
           onClick={undo}
           disabled={!canUndo}
           style={iconBtn}
           onMouseEnter={(e) => { if (canUndo) (e.currentTarget as HTMLButtonElement).style.color = "#111111"; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
-          className="disabled:opacity-30 disabled:cursor-not-allowed"
+          className="hidden sm:flex disabled:opacity-30 disabled:cursor-not-allowed"
           title="Undo (⌘Z)"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -186,7 +186,7 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
           style={iconBtn}
           onMouseEnter={(e) => { if (canRedo) (e.currentTarget as HTMLButtonElement).style.color = "#111111"; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
-          className="disabled:opacity-30 disabled:cursor-not-allowed"
+          className="hidden sm:flex disabled:opacity-30 disabled:cursor-not-allowed"
           title="Redo (⌘⇧Z)"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -194,13 +194,13 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
           </svg>
         </button>
 
-        {/* Divider */}
-        <div className="w-px h-5" style={{ background: "#E5E5E5" }} />
+        {/* Divider — desktop only */}
+        <div className="hidden sm:block w-px h-5" style={{ background: "#E5E5E5" }} />
 
         {/* Preview toggle */}
         <button
           onClick={togglePreview}
-          className="px-3 py-1.5 text-sm font-medium transition-all"
+          className="px-2.5 py-1.5 text-xs sm:px-3 sm:text-sm font-medium transition-all"
           style={{
             background: previewMode ? "#FC4C02" : "#F5F5F5",
             color: previewMode ? "#FFFFFF" : "#6B6B6B",
@@ -211,13 +211,13 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
           {previewMode ? "Editing" : "Preview"}
         </button>
 
-        {/* Divider */}
-        <div className="w-px h-5" style={{ background: "#E5E5E5" }} />
+        {/* Divider — desktop only */}
+        <div className="hidden sm:block w-px h-5" style={{ background: "#E5E5E5" }} />
 
-        {/* Copy */}
+        {/* Copy — hidden on small screens */}
         <button
           onClick={handleCopy}
-          className="px-3 py-1.5 text-sm transition-all"
+          className="hidden sm:block px-3 py-1.5 text-sm transition-all"
           style={{ color: "#6B6B6B" }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#111111"; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
@@ -228,13 +228,13 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
         {/* Download */}
         <button
           onClick={handleExport}
-          className="px-4 py-2 text-white text-sm font-semibold flex items-center gap-2 transition-all hover:brightness-110"
+          className="px-3 py-2 sm:px-4 text-white text-sm font-semibold flex items-center gap-1.5 transition-all hover:brightness-110"
           style={{ background: "#FC4C02", borderRadius: 0 }}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
-          Download
+          <span className="hidden sm:inline">Download</span>
         </button>
 
         {/* Divider */}
@@ -265,12 +265,54 @@ export default function Toolbar({ activity, stageRef }: ToolbarProps) {
                 background: "#FFFFFF",
                 border: "1px solid #E5E5E5",
                 borderRadius: 6,
-                minWidth: 180,
+                minWidth: 200,
                 zIndex: 50,
                 overflow: "hidden",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
               }}
             >
+              {/* Mobile-only items */}
+              <button
+                onClick={() => { setMenuOpen(false); handleCopy(); }}
+                className="sm:hidden w-full text-left px-4 py-3 text-sm transition-all"
+                style={{ color: "#111111" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#F5F5F5"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+              >
+                Copy to clipboard
+              </button>
+              <button
+                onClick={() => { setMenuOpen(false); undo(); }}
+                disabled={!canUndo}
+                className="sm:hidden w-full text-left px-4 py-3 text-sm transition-all disabled:opacity-40"
+                style={{ color: "#111111" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#F5F5F5"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+              >
+                Undo
+              </button>
+              <button
+                onClick={() => { setMenuOpen(false); redo(); }}
+                disabled={!canRedo}
+                className="sm:hidden w-full text-left px-4 py-3 text-sm transition-all disabled:opacity-40"
+                style={{ color: "#111111" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#F5F5F5"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+              >
+                Redo
+              </button>
+              <div className="sm:hidden" style={{ borderTop: "1px solid #E5E5E5" }}>
+                <button
+                  onClick={() => { setMenuOpen(false); setOrientation(orientation === "portrait" ? "landscape" : "portrait"); }}
+                  className="w-full text-left px-4 py-3 text-sm transition-all"
+                  style={{ color: "#111111" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#F5F5F5"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                >
+                  Switch to {orientation === "portrait" ? "Landscape" : "Portrait"}
+                </button>
+              </div>
+              <div style={{ borderTop: "1px solid #E5E5E5" }} />
               <button
                 onClick={() => { setMenuOpen(false); setConfirmModal("clear"); }}
                 className="w-full text-left px-4 py-3 text-sm transition-all"

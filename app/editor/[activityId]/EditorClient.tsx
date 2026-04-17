@@ -77,7 +77,7 @@ export default function EditorClient({ activity }: EditorClientProps) {
   const activeMobilePanel = previewMode ? null : mobilePanel;
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{ background: "#F5F5F5" }}>
+    <div className="h-[100dvh] flex flex-col overflow-hidden" style={{ background: "#F5F5F5" }}>
       <Toolbar activity={activity} stageRef={stageRef} />
 
       {/* Layout reuse banner */}

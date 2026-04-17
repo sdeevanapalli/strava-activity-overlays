@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -8,7 +9,15 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-white text-[#111111]">
-      <article className="mx-auto w-full max-w-3xl space-y-8 px-6 py-14">
+      <div className="mx-auto w-full max-w-3xl px-6 pt-6">
+        <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#6B6B6B] hover:text-[#111111] transition-colors">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </Link>
+      </div>
+      <article className="mx-auto w-full max-w-3xl space-y-8 px-6 py-8">
         <header className="space-y-2">
           <h1 className="text-3xl font-extrabold text-[#111111]">Privacy Policy</h1>
           <p className="text-sm text-[#6B6B6B]">Last updated: April 8, 2026</p>

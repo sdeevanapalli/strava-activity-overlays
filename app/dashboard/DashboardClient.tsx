@@ -119,6 +119,7 @@ export default function DashboardClient() {
   const [activities, setActivities] = useState<StravaActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
@@ -126,6 +127,17 @@ export default function DashboardClient() {
     try {
       const params = new URLSearchParams({ page: String(pageNum), per_page: "10" });
       const res = await fetch(`/api/strava/activities?${params}`);
+
+      if (res.status === 401) {
+        router.replace("/");
+        return;
+      }
+
+      if (!res.ok) {
+        setFetchError(true);
+        return;
+      }
+
       const data = await res.json();
 
       if (Array.isArray(data)) {
@@ -136,13 +148,13 @@ export default function DashboardClient() {
         }
         setHasMore(data.length === 10);
       }
-    } catch (err) {
-      console.error("Failed to fetch activities:", err);
+    } catch {
+      setFetchError(true);
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     setLoading(true);
@@ -205,6 +217,18 @@ export default function DashboardClient() {
                 style={{ background: "#E5E5E5", borderRadius: 6 }}
               />
             ))}
+          </div>
+        ) : fetchError ? (
+          <div className="text-center py-16">
+            <p className="text-lg font-semibold" style={{ color: "#111111" }}>Failed to load activities</p>
+            <p className="text-sm mt-1" style={{ color: "#6B6B6B" }}>Check your connection and try again.</p>
+            <button
+              onClick={() => { setFetchError(false); setLoading(true); fetchActivities(1, true); }}
+              className="mt-4 px-5 py-2 text-sm font-semibold text-white"
+              style={{ background: "#FC4C02", borderRadius: 4 }}
+            >
+              Retry
+            </button>
           </div>
         ) : activities.length === 0 ? (
           <div className="text-center py-16" style={{ color: "#6B6B6B" }}>

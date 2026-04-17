@@ -147,7 +147,7 @@ export default function CanvasStage({ stageRef, activity }: CanvasStageProps) {
   );
 
   return (
-    <div className="relative" style={{ width: displayW, height: displayH, flexShrink: 0 }}>
+    <div className="relative" style={{ width: displayW, height: displayH, flexShrink: 0, touchAction: "none" }}>
       {/* Canvas background — neutral gray checkerboard so both black AND white
           text elements are visible while editing. Does not affect PNG export
           (Konva renders to a transparent canvas). In preview mode show black. */}

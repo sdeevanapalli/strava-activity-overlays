@@ -1,4 +1,5 @@
-import { getSession } from "@/lib/session";
+import { getSession, encryptSession, COOKIE_NAME } from "@/lib/session";
+import { cookies } from "next/headers";
 
 const STRAVA_API = "https://www.strava.com/api/v3";
 
@@ -20,6 +21,26 @@ async function getAccessToken(): Promise<string> {
     });
     if (res.ok) {
       const refreshed = await res.json();
+      // Persist refreshed token so next request doesn't re-refresh
+      try {
+        const newSession = {
+          ...session,
+          accessToken: refreshed.access_token,
+          refreshToken: refreshed.refresh_token ?? session.refreshToken,
+          expiresAt: refreshed.expires_at,
+        };
+        const token = await encryptSession(newSession);
+        const cookieStore = await cookies();
+        cookieStore.set(COOKIE_NAME, token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24 * 30,
+          path: "/",
+        });
+      } catch {
+        // Server Components are read-only; skip silently
+      }
       return refreshed.access_token;
     }
   }

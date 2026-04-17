@@ -64,6 +64,8 @@ export default function RightPanel() {
     : null;
 
   const [themes, setThemes] = useState<ThemePreset[]>(DEFAULT_THEMES);
+  const [savingTheme, setSavingTheme] = useState(false);
+  const [themeNameInput, setThemeNameInput] = useState("");
 
   useEffect(() => {
     // Load custom themes from localStorage after hydration
@@ -81,14 +83,14 @@ export default function RightPanel() {
   };
 
   const handleSaveTheme = () => {
-    const name = window.prompt("Name this theme:");
-    if (!name?.trim()) {
-      pushToast("Theme save cancelled.", "info");
+    const name = themeNameInput.trim();
+    if (!name) {
+      pushToast("Enter a name for the theme.", "info");
       return;
     }
     const newTheme: ThemePreset = {
       id: `custom-${Date.now()}`,
-      name: name.trim(),
+      name,
       createdAt: Date.now(),
       textColor: theme === "white" ? "#FFFFFF" : theme === "black" ? "#000000" : customColor,
       fontStyle,
@@ -100,6 +102,8 @@ export default function RightPanel() {
     };
     saveTheme(newTheme);
     setThemes(loadThemes());
+    setThemeNameInput("");
+    setSavingTheme(false);
     pushToast(`Saved theme: ${newTheme.name}`, "success");
   };
 
@@ -171,15 +175,44 @@ export default function RightPanel() {
           ))}
         </div>
 
-        <button
-          onClick={handleSaveTheme}
-          className="w-full text-xs py-2 transition-all"
-          style={{ border: "1px solid #E5E5E5", borderRadius: 4, background: "#FFFFFF", color: "#6B6B6B" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#FC4C02"; (e.currentTarget as HTMLButtonElement).style.color = "#FC4C02"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#E5E5E5"; (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
-        >
-          Save current as theme
-        </button>
+        {savingTheme ? (
+          <div className="flex gap-1">
+            <input
+              autoFocus
+              type="text"
+              placeholder="Theme name…"
+              value={themeNameInput}
+              onChange={(e) => setThemeNameInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleSaveTheme(); if (e.key === "Escape") { setSavingTheme(false); setThemeNameInput(""); } }}
+              className="flex-1 text-xs px-2 py-1.5 outline-none"
+              style={{ border: "1px solid #FC4C02", borderRadius: 4, background: "#FFFFFF", color: "#111111" }}
+            />
+            <button
+              onClick={handleSaveTheme}
+              className="text-xs px-2 py-1.5 text-white font-semibold"
+              style={{ background: "#FC4C02", borderRadius: 4 }}
+            >
+              Save
+            </button>
+            <button
+              onClick={() => { setSavingTheme(false); setThemeNameInput(""); }}
+              className="text-xs px-2 py-1.5"
+              style={{ border: "1px solid #E5E5E5", borderRadius: 4, color: "#6B6B6B" }}
+            >
+              ×
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setSavingTheme(true)}
+            className="w-full text-xs py-2 transition-all"
+            style={{ border: "1px solid #E5E5E5", borderRadius: 4, background: "#FFFFFF", color: "#6B6B6B" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#FC4C02"; (e.currentTarget as HTMLButtonElement).style.color = "#FC4C02"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#E5E5E5"; (e.currentTarget as HTMLButtonElement).style.color = "#6B6B6B"; }}
+          >
+            Save current as theme
+          </button>
+        )}
       </div>
 
       <div style={DIVIDER} />

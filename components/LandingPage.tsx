@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { ConnectButton, PoweredByStrava } from "@/components/branding/StravaBranding";
 
-export default function LandingPage() {
+const ERROR_MESSAGES: Record<string, string> = {
+  access_denied: "You declined Strava access. Connect your account to continue.",
+  no_code: "Authorization code missing. Please try again.",
+  invalid_state: "Security check failed. Please try again.",
+  token_exchange_failed: "Could not connect to Strava. Please try again.",
+};
+
+export default function LandingPage({ error }: { error?: string }) {
+  const errorMessage = error ? (ERROR_MESSAGES[error] ?? "Something went wrong. Please try again.") : null;
   return (
     <main className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#F5F5F5] px-6 py-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-8">
       {/* Faint route-line background pattern */}
@@ -60,6 +68,9 @@ export default function LandingPage() {
           <div className="flex flex-col items-center gap-3">
             <ConnectButton theme="orange" className="mx-auto" />
             <p className="text-sm text-[#6B6B6B]">Read-only access · No data stored</p>
+            {errorMessage && (
+              <p className="text-sm font-medium text-[#FC4C02] max-w-xs text-center">{errorMessage}</p>
+            )}
           </div>
         </div>
       </div>
