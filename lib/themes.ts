@@ -12,6 +12,7 @@ export type ThemePreset = {
   elementBackground: 'none' | 'frosted' | 'solid';
   backgroundColor: string;
   units: 'metric' | 'imperial';
+  elements?: CanvasElement[];
 };
 
 export type ActivityPreset = {

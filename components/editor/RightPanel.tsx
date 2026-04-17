@@ -55,6 +55,7 @@ export default function RightPanel() {
     theme, customColor, fontStyle, globalOpacity, unitSystem,
     elements, selectedIds,
     setTheme, setCustomColor, setFontStyle, setGlobalOpacity, setUnitSystem,
+    setElements, pushHistory,
     updateElement, removeElement, duplicateElement,
   } = useEditorStore();
   const { pushToast } = useUIStore();
@@ -79,6 +80,10 @@ export default function RightPanel() {
     else { setTheme("custom"); setCustomColor(t.textColor); }
     setFontStyle(t.fontStyle);
     setGlobalOpacity(t.opacity);
+    if (t.elements && t.elements.length > 0) {
+      setElements(t.elements);
+      pushHistory();
+    }
     pushToast(`Applied theme: ${t.name}`, "success");
   };
 
@@ -99,6 +104,7 @@ export default function RightPanel() {
       elementBackground: "none",
       backgroundColor: "transparent",
       units: unitSystem,
+      elements: elements.length > 0 ? elements : undefined,
     };
     saveTheme(newTheme);
     setThemes(loadThemes());
