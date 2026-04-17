@@ -32,9 +32,7 @@ export default function EditorClient({ activity }: EditorClientProps) {
   const stageRef = useRef<Konva.Stage | null>(null);
   const activityId = String(activity.id);
 
-  const [layoutDecision, setLayoutDecision] = useState<"undecided" | "accepted" | "rejected">("undecided");
   const [mobilePanel, setMobilePanel] = useState<"left" | "right" | null>(null);
-  const [hasPreset] = useState(() => !!loadActivityPreset(activityId));
   const mountedRef = useRef(false);
 
   useEffect(() => {
@@ -44,6 +42,9 @@ export default function EditorClient({ activity }: EditorClientProps) {
     const preset = loadActivityPreset(activityId);
     if (preset && preset.elements.length > 0) {
       setElements(preset.elements);
+    } else {
+      // No preset for this activity — always start fresh regardless of store state
+      setElements([]);
     }
   }, [activityId, setElements]);
 
@@ -72,42 +73,11 @@ export default function EditorClient({ activity }: EditorClientProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [undo, redo]);
 
-  const showLayoutBanner =
-    layoutDecision === "undecided" && !hasPreset && elements.length > 0;
   const activeMobilePanel = previewMode ? null : mobilePanel;
 
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden" style={{ background: "#F5F5F5" }}>
       <Toolbar activity={activity} stageRef={stageRef} />
-
-      {/* Layout reuse banner */}
-      {showLayoutBanner && (
-        <div
-          className="flex items-center justify-between px-4 py-2 text-sm"
-          style={{ background: "#FFFBF5", borderBottom: "1px solid #FCE8D5", color: "#6B6B6B" }}
-        >
-          <span style={{ color: "#111111" }}>You have a saved layout from another activity. Use it here?</span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setLayoutDecision("accepted")}
-              className="px-3 py-1 text-white text-xs"
-              style={{ background: "#FC4C02", borderRadius: 3 }}
-            >
-              Use last layout
-            </button>
-            <button
-              onClick={() => {
-                setElements([]);
-                setLayoutDecision("rejected");
-              }}
-              className="px-3 py-1 text-xs"
-              style={{ border: "1px solid #E5E5E5", borderRadius: 3, background: "#FFFFFF", color: "#6B6B6B" }}
-            >
-              Start fresh
-            </button>
-          </div>
-        </div>
-      )}
 
       {!previewMode && (
         <div
