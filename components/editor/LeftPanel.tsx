@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useEditorStore } from "@/store/editorStore";
 import { useUIStore } from "@/store/uiStore";
 import type { StravaActivity } from "@/types/strava";
@@ -52,8 +53,28 @@ const SECTION_LABEL: React.CSSProperties = {
 };
 
 export default function LeftPanel({ activity }: LeftPanelProps) {
-  const { addElement } = useEditorStore();
+  const { addElement, backgroundImage, setBackgroundImage, setCustomCanvasSize } = useEditorStore();
   const { pushToast } = useUIStore();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportBackground = () => fileInputRef.current?.click();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      const img = new window.Image();
+      img.onload = () => {
+        setBackgroundImage(dataUrl);
+        setCustomCanvasSize({ width: img.naturalWidth, height: img.naturalHeight });
+      };
+      img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
 
   const handleAddStat = (chip: StatChip) => {
     const newEl: CanvasElement = {
@@ -63,7 +84,7 @@ export default function LeftPanel({ activity }: LeftPanelProps) {
       label: chip.label.toUpperCase(),
       x: -1,
       y: -1,
-      fontSize: 80,
+      fontSize: backgroundImage ? 32 : 80,
       opacity: 1,
       background: "none",
     };
@@ -78,8 +99,8 @@ export default function LeftPanel({ activity }: LeftPanelProps) {
     const newEl: CanvasElement = {
       id: makeElementId("map"),
       type: "map",
-      x: (1080 - 600) / 2,
-      y: (1920 - 600) / 2,
+      x: -1,
+      y: -1,
       width: 600,
       height: 600,
     };
@@ -94,8 +115,8 @@ export default function LeftPanel({ activity }: LeftPanelProps) {
     const newEl: CanvasElement = {
       id: makeElementId("splits"),
       type: "splits",
-      x: 100,
-      y: 1600,
+      x: -1,
+      y: -1,
       width: 880,
       height: 200,
     };
@@ -112,6 +133,57 @@ export default function LeftPanel({ activity }: LeftPanelProps) {
 
   return (
     <div className="p-4 space-y-4">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      <div>
+        <span style={SECTION_LABEL}>Background</span>
+        <div className="space-y-1.5">
+          <button
+            onClick={handleImportBackground}
+            className="w-full flex items-center gap-3 px-3 py-2 text-left transition-all"
+            style={itemStyle}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "#F5F5F5";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "#FC4C02";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "#E5E5E5";
+            }}
+          >
+            <span className="text-sm flex-1" style={{ color: "#111111" }}>
+              {backgroundImage ? "Replace Photo" : "Import Photo"}
+            </span>
+            <span className="text-xs" style={{ color: "#6B6B6B" }}>↑</span>
+          </button>
+
+          {backgroundImage && (
+            <button
+              onClick={() => { setBackgroundImage(null); setCustomCanvasSize(null); }}
+              className="w-full flex items-center gap-3 px-3 py-2 text-left transition-all"
+              style={{ ...itemStyle, borderColor: "#FC4C02" }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "#FFF5F2";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF";
+              }}
+            >
+              <span className="text-sm flex-1" style={{ color: "#FC4C02" }}>Remove Photo</span>
+              <span className="text-xs" style={{ color: "#FC4C02" }}>×</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div style={{ borderTop: "1px solid #E5E5E5" }} />
+
       <div>
         <span style={SECTION_LABEL}>Stats</span>
         <div className="space-y-1.5">

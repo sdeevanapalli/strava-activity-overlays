@@ -32,37 +32,40 @@ export const CANVAS_DIMS = {
 // Fixed visual scale — display width is always 380/1080 * canvasWidth
 export const BASE_DISPLAY_W = 380;
 
-// Smart placement grid
-const COLS = 3;
-const ROWS = 6;
+// Find a non-overlapping center position, offsetting by STEP if occupied.
+// All candidate positions are clamped within canvas bounds.
+function findCenterPosition(
+  elements: CanvasElement[],
+  canvasW: number,
+  canvasH: number,
+  elW: number,
+  elH: number,
+): { x: number; y: number } {
+  const baseX = Math.round((canvasW - elW) / 2);
+  const baseY = Math.round((canvasH - elH) / 2);
+  const STEP = 50;
+  const maxX = canvasW - elW;
+  const maxY = canvasH - elH;
 
-function isCellOccupied(col: number, row: number, canvasW: number, canvasH: number, elements: CanvasElement[]): boolean {
-  const cellW = canvasW / COLS;
-  const cellH = canvasH / ROWS;
-  const cellX = col * cellW + cellW / 2;
-  const cellY = row * cellH + cellH / 2;
-  return elements.some((el) => {
-    const elCX = el.x + (el.width || 300) / 2;
-    const elCY = el.y + (el.height || 80) / 2;
-    return Math.abs(elCX - cellX) < cellW / 2 && Math.abs(elCY - cellY) < cellH / 2;
-  });
-}
-
-function findNextPosition(elements: CanvasElement[], canvasW: number, canvasH: number): { x: number; y: number } {
-  const cellW = canvasW / COLS;
-  const cellH = canvasH / ROWS;
-  for (let row = 0; row < ROWS; row++) {
-    for (let col = 0; col < COLS; col++) {
-      if (!isCellOccupied(col, row, canvasW, canvasH, elements)) {
-        return {
-          x: col * cellW + 40,
-          y: row * cellH + cellH / 2 - 40,
-        };
-      }
-    }
+  for (let i = 0; i <= 12; i++) {
+    const x = Math.min(baseX + i * STEP, maxX);
+    const y = Math.min(baseY + i * STEP, maxY);
+    const newCX = x + elW / 2;
+    const newCY = y + elH / 2;
+    const overlaps = elements.some((el) => {
+      const elW2 = el.width ?? 300;
+      const elH2 = el.height ?? 80;
+      const elCX = el.x + elW2 / 2;
+      const elCY = el.y + elH2 / 2;
+      return (
+        Math.abs(elCX - newCX) < (elW + elW2) / 2 &&
+        Math.abs(elCY - newCY) < (elH + elH2) / 2
+      );
+    });
+    if (!overlaps) return { x, y };
   }
-  const last = elements[elements.length - 1];
-  return last ? { x: last.x + 24, y: last.y + 24 } : { x: 100, y: 100 };
+  // Fallback: clamp center to canvas
+  return { x: Math.min(baseX, maxX), y: Math.min(baseY, maxY) };
 }
 
 export interface EditorState {
@@ -77,9 +80,13 @@ export interface EditorState {
   history: CanvasElement[][];
   historyIndex: number;
   previewMode: boolean;
+  backgroundImage: string | null;
+  customCanvasSize: { width: number; height: number } | null;
 
   // Actions
   addElement: (element: CanvasElement) => void;
+  setBackgroundImage: (dataUrl: string | null) => void;
+  setCustomCanvasSize: (size: { width: number; height: number } | null) => void;
   updateElement: (id: string, updates: Partial<CanvasElement>) => void;
   removeElement: (id: string) => void;
   duplicateElement: (id: string) => void;
@@ -113,6 +120,8 @@ const initialState = {
   history: [[]],
   historyIndex: 0,
   previewMode: false,
+  backgroundImage: null as string | null,
+  customCanvasSize: null as { width: number; height: number } | null,
 };
 
 export const useEditorStore = create<EditorState>()(
@@ -122,17 +131,24 @@ export const useEditorStore = create<EditorState>()(
 
       addElement: (element) => {
         const state = get();
-        const { width: canvasW, height: canvasH } = CANVAS_DIMS[state.orientation];
+        const { width: canvasW, height: canvasH } =
+          state.customCanvasSize ?? CANVAS_DIMS[state.orientation];
         let finalElement = element;
 
-        if (element.x === -1 && element.type === "stat") {
-          const pos = findNextPosition(state.elements, canvasW, canvasH);
-          finalElement = { ...element, x: pos.x, y: pos.y };
+        if (element.x === -1) {
+          const elW = element.width ?? 300;
+          const elH = element.height ?? 80;
+          const pos = findCenterPosition(state.elements, canvasW, canvasH, elW, elH);
+          finalElement = { ...element, ...pos };
         }
 
         set((s) => ({ elements: [...s.elements, finalElement] }));
         get().pushHistory();
       },
+
+      setBackgroundImage: (dataUrl) => set({ backgroundImage: dataUrl }),
+
+      setCustomCanvasSize: (size) => set({ customCanvasSize: size }),
 
       updateElement: (id, updates) => {
         set((state) => ({
@@ -253,6 +269,8 @@ export const useEditorStore = create<EditorState>()(
           fontStyle: "clean",
           globalOpacity: 1,
           orientation: "portrait",
+          backgroundImage: null,
+          customCanvasSize: null,
         });
         get().pushHistory();
       },

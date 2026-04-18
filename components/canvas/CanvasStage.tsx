@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { Stage, Layer } from "react-konva";
+import { useCallback, useEffect, useState } from "react";
+import { Stage, Layer, Image as KonvaImage } from "react-konva";
 import type Konva from "konva";
 import type { KonvaEventObject } from "konva/lib/Node";
 import type { StravaActivity } from "@/types/strava";
@@ -56,14 +56,29 @@ export default function CanvasStage({ stageRef, activity }: CanvasStageProps) {
     globalOpacity,
     orientation,
     previewMode,
+    backgroundImage,
+    customCanvasSize,
     selectElement,
     clearSelection,
     updateElement,
     pushHistory,
   } = useEditorStore();
 
-  const { width: canvasW, height: canvasH } = CANVAS_DIMS[orientation];
-  const scale = BASE_DISPLAY_W / 1080; // fixed visual scale, same for both orientations
+  const [bgImg, setBgImg] = useState<HTMLImageElement | null>(null);
+  useEffect(() => {
+    if (!backgroundImage) { setBgImg(null); return; }
+    const img = new window.Image();
+    img.onload = () => setBgImg(img);
+    img.src = backgroundImage;
+  }, [backgroundImage]);
+
+  const { width: canvasW, height: canvasH } =
+    customCanvasSize ?? CANVAS_DIMS[orientation];
+  // For custom image canvases scale to fit BASE_DISPLAY_W; otherwise use the
+  // fixed 380/1080 scale so standard portrait/landscape sizes stay consistent.
+  const scale = customCanvasSize
+    ? BASE_DISPLAY_W / canvasW
+    : BASE_DISPLAY_W / 1080;
   const displayW = Math.round(canvasW * scale);
   const displayH = Math.round(canvasH * scale);
 
@@ -178,6 +193,13 @@ export default function CanvasStage({ stageRef, activity }: CanvasStageProps) {
           if (e.target === e.target.getStage()) clearSelection();
         }}
       >
+        {/* Background image layer — rendered below all elements, not affected by globalOpacity */}
+        {bgImg && (
+          <Layer>
+            <KonvaImage image={bgImg} x={0} y={0} width={canvasW} height={canvasH} />
+          </Layer>
+        )}
+
         {/* Main content layer — globalOpacity applied here, once */}
         <Layer opacity={globalOpacity}>
           {elements.map((el) => {
