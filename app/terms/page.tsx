@@ -71,10 +71,10 @@ export default function TermsPage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-bold text-[#111111]">5. Data and Privacy</h2>
-          <p>Your use of ActivityOverlays is also governed by our Privacy Policy.</p>
+          <p>Your use of ActivityOverlays is also governed by my Privacy Policy.</p>
           <p>
-            If you disconnect your Strava account, we may delete or disassociate stored tokens and account data that
-            we control, subject to legal or security retention obligations.
+            If you disconnect your Strava account, I may delete or disassociate stored tokens and account data that I
+            control, subject to legal or security retention obligations.
           </p>
         </section>
 
@@ -88,6 +88,7 @@ export default function TermsPage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-bold text-[#111111]">7. Contact</h2>
+          <p>Data controller: Shriniketh Deevanapalli</p>
           <p>Email: shriniketh.d@gmail.com</p>
         </section>
       </article>
