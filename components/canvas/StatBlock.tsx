@@ -14,15 +14,16 @@ interface StatBlockProps {
   fontWeight: string;
   value: string;
   canvasWidth: number;
+  canvasScale: number;
   onSelect: () => void;
   onDragMove: (e: KonvaEventObject<DragEvent>) => void;
   onDragEnd: (e: KonvaEventObject<DragEvent>) => void;
 }
 
-const H_PAD  = 24;  // horizontal padding per side (inside block)
-const V_PAD  = 12;  // top and bottom padding
-const GAP    = 8;   // gap between value and label
-const MARGIN = 20;  // minimum distance from canvas edge
+const BASE_H_PAD  = 24;  // horizontal padding per side (inside block)
+const BASE_V_PAD  = 12;  // top and bottom padding
+const BASE_GAP    = 8;   // gap between value and label
+const BASE_MARGIN = 20;  // minimum distance from canvas edge
 
 /**
  * Measure text width using a temporary Konva.Text node.
@@ -53,12 +54,13 @@ function fitFontSize(
   fontWeight: string,
   fontSize: number,
   fontFamily: string,
-  maxWidth: number
+  maxWidth: number,
+  horizontalPadding: number
 ): { effectiveFontSize: number; valueTextW: number } {
   let fs = fontSize;
   while (fs > 10) {
     const w = measureKonvaText(value, fontWeight, fs, fontFamily);
-    if (w + H_PAD * 2 <= maxWidth) return { effectiveFontSize: fs, valueTextW: w };
+    if (w + horizontalPadding * 2 <= maxWidth) return { effectiveFontSize: fs, valueTextW: w };
     fs = Math.max(10, fs - 2);
   }
   return {
@@ -75,35 +77,41 @@ export default function StatBlock({
   fontWeight,
   value,
   canvasWidth,
+  canvasScale,
   onSelect,
   onDragMove,
   onDragEnd,
 }: StatBlockProps) {
   const groupRef = useRef<Konva.Group>(null);
 
+  const hPad = BASE_H_PAD * canvasScale;
+  const vPad = BASE_V_PAD * canvasScale;
+  const gap = BASE_GAP * canvasScale;
+  const margin = BASE_MARGIN * canvasScale;
+
   // ── Layout constants derived from fontSize ────────────────────────────────
-  const requestedSize  = element.fontSize || 80;
-  const maxBlockW      = canvasWidth - MARGIN * 2;
+  const requestedSize  = (element.fontSize || 80) * canvasScale;
+  const maxBlockW      = canvasWidth - margin * 2;
 
   // Shrink fontSize until value fits on one line; never wrap
   const { effectiveFontSize, valueTextW } = fitFontSize(
-    value, fontWeight, requestedSize, fontFamily, maxBlockW
+    value, fontWeight, requestedSize, fontFamily, maxBlockW, hPad
   );
 
-  const labelFontSize  = Math.round(effectiveFontSize * 0.35);
-  const letterSpacing  = Math.max(2, Math.round(effectiveFontSize * 0.04));
+  const labelFontSize  = Math.max(1, Math.round(effectiveFontSize * 0.35));
+  const letterSpacing  = Math.max(1, Math.round(effectiveFontSize * 0.04));
 
   // ── Block dimensions ──────────────────────────────────────────────────────
   // Width: fit the value text exactly (label is center-aligned inside same width)
-  const blockW = Math.min(valueTextW + H_PAD * 2, maxBlockW);
+  const blockW = Math.min(valueTextW + hPad * 2, maxBlockW);
 
   // Height formula (all terms explicit):
   //   V_PAD + effectiveFontSize + GAP + labelFontSize + V_PAD
-  const blockH = V_PAD + effectiveFontSize + GAP + labelFontSize + V_PAD;
+  const blockH = vPad + effectiveFontSize + gap + labelFontSize + vPad;
 
   // ── Y positions — every value derived from the formula ────────────────────
-  const valueY = V_PAD;
-  const labelY = V_PAD + effectiveFontSize + GAP;
+  const valueY = vPad;
+  const labelY = vPad + effectiveFontSize + gap;
 
   // ── Background box ────────────────────────────────────────────────────────
   const hasBg = element.background === "frosted" || element.background === "solid";
@@ -112,7 +120,7 @@ export default function StatBlock({
   useEffect(() => {
     const layer = groupRef.current?.getLayer?.();
     if (layer) layer.batchDraw();
-  }, [effectiveFontSize, value, element.background, element.opacity, color]);
+  }, [effectiveFontSize, value, element.background, element.opacity, color, canvasScale]);
 
   return (
     <Group

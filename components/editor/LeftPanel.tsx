@@ -84,7 +84,7 @@ export default function LeftPanel({ activity }: LeftPanelProps) {
       label: chip.label.toUpperCase(),
       x: -1,
       y: -1,
-      fontSize: backgroundImage ? 32 : 80,
+      fontSize: 80,
       opacity: 1,
       background: "none",
     };

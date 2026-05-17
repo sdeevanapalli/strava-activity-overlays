@@ -11,6 +11,7 @@ interface MapElementProps {
   isSelected: boolean;
   color: string;
   polyline: string;
+  canvasScale: number;
   onSelect: () => void;
   onDragMove: (e: KonvaEventObject<DragEvent>) => void;
   onDragEnd: (e: KonvaEventObject<DragEvent>) => void;
@@ -21,12 +22,13 @@ export default function MapElement({
   isSelected,
   color,
   polyline,
+  canvasScale,
   onSelect,
   onDragMove,
   onDragEnd,
 }: MapElementProps) {
-  const w = element.width || 600;
-  const h = element.height || 600;
+  const w = (element.width || 600) * canvasScale;
+  const h = (element.height || 600) * canvasScale;
 
   const image = useMemo(() => {
     if (!polyline) return null;

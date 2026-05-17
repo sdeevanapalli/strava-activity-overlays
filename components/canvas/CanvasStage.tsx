@@ -79,6 +79,9 @@ export default function CanvasStage({ stageRef, activity }: CanvasStageProps) {
   const scale = customCanvasSize
     ? BASE_DISPLAY_W / canvasW
     : BASE_DISPLAY_W / 1080;
+  const canvasScale = customCanvasSize
+    ? canvasW / CANVAS_DIMS[orientation].width
+    : 1;
   const displayW = Math.round(canvasW * scale);
   const displayH = Math.round(canvasH * scale);
 
@@ -219,6 +222,7 @@ export default function CanvasStage({ stageRef, activity }: CanvasStageProps) {
                   fontWeight={fontWeight}
                   value={getActivityValue(el.statKey!, activity, unitSystem)}
                   canvasWidth={canvasW}
+                  canvasScale={canvasScale}
                   onSelect={() => selectElement(el.id)}
                   onDragMove={(e) => handleDragMove(e, el.id)}
                   onDragEnd={(e) => handleDragEnd(e, el.id)}
@@ -234,6 +238,7 @@ export default function CanvasStage({ stageRef, activity }: CanvasStageProps) {
                   isSelected={isSelected}
                   color={color}
                   polyline={activity.map?.summary_polyline || ""}
+                  canvasScale={canvasScale}
                   onSelect={() => selectElement(el.id)}
                   onDragMove={(e) => handleDragMove(e, el.id)}
                   onDragEnd={(e) => handleDragEnd(e, el.id)}
@@ -249,6 +254,7 @@ export default function CanvasStage({ stageRef, activity }: CanvasStageProps) {
                   isSelected={isSelected}
                   color={color}
                   splits={activity.splits_metric || []}
+                  canvasScale={canvasScale}
                   onSelect={() => selectElement(el.id)}
                   onDragMove={(e) => handleDragMove(e, el.id)}
                   onDragEnd={(e) => handleDragEnd(e, el.id)}
