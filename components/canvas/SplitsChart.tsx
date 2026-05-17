@@ -11,6 +11,7 @@ interface SplitsChartProps {
   isSelected: boolean;
   color: string;
   splits: Split[];
+  canvasScale: number;
   onSelect: () => void;
   onDragMove: (e: KonvaEventObject<DragEvent>) => void;
   onDragEnd: (e: KonvaEventObject<DragEvent>) => void;
@@ -21,12 +22,13 @@ export default function SplitsChart({
   isSelected,
   color,
   splits,
+  canvasScale,
   onSelect,
   onDragMove,
   onDragEnd,
 }: SplitsChartProps) {
-  const w = element.width || 400;
-  const h = element.height || 120;
+  const w = (element.width || 400) * canvasScale;
+  const h = (element.height || 120) * canvasScale;
 
   const image = useMemo(() => {
     if (!splits || splits.length === 0) return null;
