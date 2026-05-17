@@ -4,8 +4,8 @@ Last updated: April 8, 2026
 
 ActivityOverlays (referred to as "I", "my", or "me") respects your privacy. This Privacy Policy explains how I collect, use, disclose, and protect information when you connect your Strava account to my application.
 
-## 1. Information We Collect
-When you authorize ActivityOverlays with Strava, we may access and process:
+## 1. Information I Collect
+When you authorize ActivityOverlays with Strava, I may access and process:
 - Athlete profile data (for example: name, profile image, athlete ID)
 - Activity data (for example: activity name, type, distance, time, elevation, route/stream data)
 - OAuth tokens required to access your Strava data (access token and refresh token)
@@ -13,7 +13,7 @@ When you authorize ActivityOverlays with Strava, we may access and process:
 
 I do not request more data than needed to provide the core app feature.
 
-## 2. How We Use Your Data
+## 2. How I Use Your Data
 I use Strava data only to provide ActivityOverlays core functionality, including route visualization and analytics.
 
 Specifically, I use this data to:
@@ -52,10 +52,10 @@ Depending on your location, you may have rights to request access, correction, d
 To make a request, contact me at: shriniketh.d@gmail.com
 
 ## 8. Children's Privacy
-ActivityOverlays is not directed to children under 13, and we do not knowingly collect personal information from children.
+ActivityOverlays is not directed to children under 13, and I do not knowingly collect personal information from children.
 
 ## 9. Changes to This Policy
-We may update this Privacy Policy from time to time. We will post updates on this page and revise the "Last updated" date.
+I may update this Privacy Policy from time to time. I will post updates on this page and revise the "Last updated" date.
 
 ## 10. Contact
 If you have questions about this Privacy Policy, contact:
