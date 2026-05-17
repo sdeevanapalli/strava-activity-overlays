@@ -1,63 +1,63 @@
 # Privacy Policy
 
-Last updated: April 8, 2026
+Last updated: May 17, 2026
 
-ActivityOverlays (referred to as "I", "my", or "me") respects your privacy. This Privacy Policy explains how I collect, use, disclose, and protect information when you connect your Strava account to my application.
+ActivityOverlays ("the Service", "the Application", "we", "us", or "our"), operated by Shriniketh Deevanapalli ("the Developer"), respects your privacy. This Privacy Policy explains how your information is collected, used, disclosed, and protected when you connect your Strava account to our application.
 
-## 1. Information I Collect
-When you authorize ActivityOverlays with Strava, I may access and process:
+## 1. Information We Collect
+When you authorize ActivityOverlays with Strava, the Service may access and process:
 - Athlete profile data (for example: name, profile image, athlete ID)
 - Activity data (for example: activity name, type, distance, time, elevation, route/stream data)
 - OAuth tokens required to access your Strava data (access token and refresh token)
 - Basic device, browser, and log data used to secure and operate the service
 
-I do not request more data than needed to provide the core app feature.
+We do not request or process more data than is strictly required to provide the core application features.
 
-## 2. How I Use Your Data
-I use Strava data only to provide ActivityOverlays core functionality, including route visualization and analytics.
+## 2. How We Use Your Data
+The Service uses Strava data exclusively to deliver core functionality, including route visualization, map overlays, and performance analytics.
 
-Specifically, I use this data to:
-- Authenticate you through Strava OAuth
-- Fetch and display your activity information inside the app
-- Generate visual overlays and activity insights you request
-- Maintain your authenticated session and refresh access securely
+Specifically, we use this data to:
+- Authenticate your account through Strava OAuth
+- Fetch and display your activity information inside the application
+- Generate visual overlays and activity insights at your request
+- Maintain your authenticated session and refresh access tokens securely
 
 ## 3. Data Sharing and Sale
-I do not sell your personal data or Strava data to third parties.
+We do not sell, rent, or trade your personal data or Strava activity data to third parties.
 
-I may use service providers strictly for hosting, infrastructure, logging, or security operations under contractual confidentiality obligations.
+We may utilize trusted third-party service providers strictly for cloud hosting, infrastructure management, error logging, or security operations. These providers operate under strict contractual confidentiality obligations and are permitted to use your data only as necessary to provide these services to us.
 
 ## 4. Data Storage and Security
-- Tokens are stored securely on server-side infrastructure.
-- I use technical and organizational safeguards to protect data from unauthorized access.
-- Access to production systems is restricted to authorized operators.
-- I do not expose refresh tokens to the browser.
-- Production traffic should use HTTPS and secure cookies.
+- Authentication tokens are stored securely using server-side infrastructure and encryption protocols.
+- Technical and organizational safeguards are implemented to protect your data from unauthorized access, loss, or alteration.
+- Access to production systems and databases is strictly restricted to authorized operators.
+- We do not expose refresh tokens to the client-side browser environment.
+- All production web traffic is enforced over secure HTTPS connections using encrypted cookies.
 
 ## 5. Data Retention
-I retain Strava-linked account data only as long as needed to provide the service, comply with legal obligations, or resolve disputes.
+We retain your Strava-linked account data only for as long as necessary to provide the requested services, comply with legal obligations, or resolve disputes.
 
-When you disconnect your Strava account, I deauthorize and remove stored OAuth credentials and related local session state I control.
+When you disconnect your Strava account, the Service immediately deauthorizes the application and purges stored OAuth credentials and related local session states under our direct control.
 
 ## 6. Deauthorization and Revoking Access
-You can revoke ActivityOverlays access at any time by:
-- Using the in-app "Disconnect Strava" control, or
-- Revoking access from your Strava account settings
+You retain complete control over your data and can revoke access to ActivityOverlays at any time by:
+- Utilizing the in-app "Disconnect Strava" control feature, or
+- Revoking application permissions directly within your Strava account settings (Apps page)
 
-When disconnected, I call Strava deauthorization and remove stored tokens from my database.
+Upon disconnection via the application, the Service triggers the official Strava API deauthorization endpoint and deletes your stored authentication tokens from our database.
 
 ## 7. Your Rights
-Depending on your location, you may have rights to request access, correction, deletion, or restriction of your personal data.
+Depending on your geographical location, you may possess specific legal rights regarding your personal data under applicable privacy laws (such as the GDPR or CCPA). These may include the right to request access to, correction of, restriction of, or permanent deletion of your personal information.
 
-To make a request, contact me at: shriniketh.d@gmail.com
+To exercise any of these rights, please contact the Developer at: shriniketh.d@gmail.com
 
 ## 8. Children's Privacy
-ActivityOverlays is not directed to children under 13, and I do not knowingly collect personal information from children.
+ActivityOverlays is not directed to children under the age of 13 (or the applicable legal age of digital consent in your jurisdiction). We do not knowingly collect, maintain, or process personal information from children. If we discover that a child has provided us with personal data, we will take immediate steps to delete such information from our servers.
 
-## 9. Changes to This Policy
-I may update this Privacy Policy from time to time. I will post updates on this page and revise the "Last updated" date.
+## 9. Changes to This Privacy Policy
+We reserve the right to update or modify this Privacy Policy at any time. Any changes will be posted directly on this page with a revised "Last updated" date. Your continued use of the Service after the posting of an updated policy constitutes your acknowledgement and acceptance of the revised terms.
 
-## 10. Contact
-If you have questions about this Privacy Policy, contact:
-- Data controller: Shriniketh Deevanapalli
-- Email: shriniketh.d@gmail.com
+## 10. Contact Information
+If you have any questions, concerns, or requests regarding this Privacy Policy, please contact:
+- **Data Controller & Developer:** Shriniketh Deevanapalli
+- **Email:** shriniketh.d@gmail.com
