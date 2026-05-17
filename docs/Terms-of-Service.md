@@ -27,21 +27,22 @@ You agree not to:
 - Misrepresent the service as an official Strava product
 
 ## 5. Availability and Changes
-We may modify, suspend, or discontinue parts of the service at any time. We do not guarantee uninterrupted availability.
+I may modify, suspend, or discontinue parts of the service at any time. I do not guarantee uninterrupted availability.
 
 ## 6. Data and Privacy
-Your use of ActivityOverlays is also governed by our Privacy Policy.
+Your use of ActivityOverlays is also governed by my Privacy Policy.
 
-If you disconnect your Strava account, we may delete or disassociate stored tokens and account data that we control, subject to legal or security retention obligations.
+If you disconnect your Strava account, I may delete or disassociate stored tokens and account data that I control, subject to legal or security retention obligations.
 
 ## 7. Limitation of Liability
-To the maximum extent permitted by law, ActivityOverlays is provided "as is" without warranties, and we are not liable for indirect, incidental, or consequential damages arising from use of the service.
+To the maximum extent permitted by law, ActivityOverlays is provided "as is" without warranties, and I am not liable for indirect, incidental, or consequential damages arising from use of the service.
 
-We disclaim implied warranties of merchantability, fitness for a particular purpose, and non-infringement.
+I disclaim implied warranties of merchantability, fitness for a particular purpose, and non-infringement.
 
 ## 8. Termination
 You may stop using the service at any time. You can revoke Strava access via in-app disconnect/deauthorization or via Strava settings.
 
 ## 9. Contact
 Questions about these Terms:
+- Data controller: Shriniketh Deevanapalli
 - Email: shriniketh.d@gmail.com
