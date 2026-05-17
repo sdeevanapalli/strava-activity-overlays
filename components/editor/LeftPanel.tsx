@@ -12,6 +12,21 @@ interface StatChip {
   available: (activity: StravaActivity) => boolean;
 }
 
+const CYCLING_SPORT_TYPES = new Set([
+  "Ride",
+  "VirtualRide",
+  "EBikeRide",
+  "MountainBikeRide",
+  "EMountainBikeRide",
+  "GravelRide",
+  "Velomobile",
+  "Handcycle",
+]);
+
+function isCyclingActivity(activity: StravaActivity) {
+  return CYCLING_SPORT_TYPES.has(activity.sport_type) || CYCLING_SPORT_TYPES.has(activity.type);
+}
+
 const STAT_CHIPS: StatChip[] = [
   { key: "distance",       label: "Distance",         available: () => true },
   { key: "moving_time",    label: "Moving Time",      available: () => true },
@@ -23,7 +38,7 @@ const STAT_CHIPS: StatChip[] = [
   { key: "calories",       label: "Calories",         available: (a) => !!a.calories },
   { key: "avg_hr",         label: "Avg Heart Rate",   available: (a) => !!a.average_heartrate },
   { key: "max_hr",         label: "Max Heart Rate",   available: (a) => !!a.max_heartrate },
-  { key: "avg_cadence",    label: "Avg Cadence",      available: (a) => !!a.average_cadence },
+  { key: "avg_cadence",    label: "Avg Cadence",      available: (a) => isCyclingActivity(a) || !!a.average_cadence },
   { key: "avg_power",      label: "Avg Power",        available: (a) => !!a.average_watts },
   { key: "activity_name",  label: "Activity Name",    available: () => true },
   { key: "date",           label: "Date & Time",      available: () => true },
