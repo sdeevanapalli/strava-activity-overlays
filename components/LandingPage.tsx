@@ -66,6 +66,7 @@ export default function LandingPage({ error }: { error?: string }) {
           </div>
 
           <div className="flex flex-col items-center gap-3">
+            <p className="text-sm text-[#6B6B6B]">Brought to you by <strong>Shriniketh Deevanapalli</strong></p>
             <ConnectButton theme="orange" className="mx-auto" />
             <p className="text-sm text-[#6B6B6B]">Read-only access · No data stored</p>
             {errorMessage && (
