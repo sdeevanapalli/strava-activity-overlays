@@ -76,6 +76,7 @@ export default function LandingPage({ error }: { error?: string }) {
         </div>
       </div>
 
+
       <footer className="relative z-10 mt-10 flex items-end justify-center">
         <div className="flex flex-col items-center gap-4">
           <PoweredByStrava color="black" className="origin-center scale-[0.45] sm:scale-[0.55]" />
