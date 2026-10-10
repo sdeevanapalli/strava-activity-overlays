@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     default: "ActivityOverlays",
     template: "%s | ActivityOverlays",
   },
-  description: "Create beautiful transparent PNG overlays and insights from your Strava activities",
+  description: "ActivityOverlays has retired because API access is no longer available to its non-subscriber developer.",
   applicationName: "ActivityOverlays",
   manifest: "/manifest.webmanifest",
   icons: {
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     type: "website",
     url: "/",
     title: "ActivityOverlays",
-    description: "Create beautiful transparent PNG overlays and insights from your Strava activities",
+    description: "ActivityOverlays has retired because API access is no longer available to its non-subscriber developer.",
     siteName: "ActivityOverlays",
     images: [
       {
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ActivityOverlays",
-    description: "Create beautiful transparent PNG overlays and insights from your Strava activities",
+    description: "ActivityOverlays has retired because API access is no longer available to its non-subscriber developer.",
     images: ["/favicon.png"],
   },
   robots: {

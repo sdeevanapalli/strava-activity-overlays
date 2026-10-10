@@ -1,15 +1,6 @@
 import Link from "next/link";
-import { ConnectButton, PoweredByStrava } from "@/components/branding/StravaBranding";
 
-const ERROR_MESSAGES: Record<string, string> = {
-  access_denied: "You declined Strava access. Connect your account to continue.",
-  no_code: "Authorization code missing. Please try again.",
-  invalid_state: "Security check failed. Please try again.",
-  token_exchange_failed: "Could not connect to Strava. Please try again.",
-};
-
-export default function LandingPage({ error }: { error?: string }) {
-  const errorMessage = error ? (ERROR_MESSAGES[error] ?? "Something went wrong. Please try again.") : null;
+export default function LandingPage() {
   return (
     <main className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#F5F5F5] px-6 py-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-8">
       {/* Faint route-line background pattern */}
@@ -56,38 +47,36 @@ export default function LandingPage({ error }: { error?: string }) {
               className="text-5xl font-extrabold text-[#111111] sm:text-6xl lg:text-7xl"
               style={{ fontFamily: "var(--font-nunito), sans-serif" }}
             >
-              Your run.
-              <br />
-              Your story.
+              ActivityOverlays
             </h1>
-            <p className="mx-auto max-w-md text-base text-[#6B6B6B] sm:text-lg lg:text-xl">
-              Custom overlays for social media. Built for Strava athletes.
+            <p className="mx-auto max-w-lg text-base font-semibold text-[#FC4C02] sm:text-lg lg:text-xl">
+              This website has retired.
+            </p>
+            <p className="mx-auto max-w-lg text-base leading-7 text-[#6B6B6B] sm:text-lg">
+              ActivityOverlays was created to help athletes turn their Strava activities into custom, social-ready overlays. Unfortunately, Strava&apos;s updated API requirements now require the developer of an application to have an active subscription. As I am not a Strava subscriber, my API access has been revoked, so I can no longer access activity data or continue building and maintaining this website.
+            </p>
+            <p className="mx-auto max-w-lg text-base leading-7 text-[#6B6B6B] sm:text-lg">
+              This is a retirement of the project, not an issue with your Strava account. Thank you to everyone who tried ActivityOverlays, shared feedback, and helped shape it while it was available.
             </p>
           </div>
 
-          <div className="flex flex-col items-center gap-3">
-            <p className="text-sm text-[#6B6B6B]">Brought to you by <strong>Shriniketh Deevanapalli</strong></p>
-            <ConnectButton theme="orange" className="mx-auto" />
-            <p className="text-sm text-[#6B6B6B]">Read-only access · No data stored</p>
-            {errorMessage && (
-              <p className="text-sm font-medium text-[#FC4C02] max-w-xs text-center">{errorMessage}</p>
-            )}
+          <div className="flex flex-col items-center gap-3 text-sm text-[#6B6B6B]">
+            <p>
+              Built by <strong className="text-[#111111]">Shriniketh Deevanapalli</strong>
+            </p>
           </div>
         </div>
       </div>
 
 
       <footer className="relative z-10 mt-10 flex items-end justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <PoweredByStrava color="black" className="origin-center scale-[0.45] sm:scale-[0.55]" />
-          <div className="flex items-center gap-4 text-xs text-[#6B6B6B]">
-            <Link href="/privacy" className="font-medium hover:text-[#111111]">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="font-medium hover:text-[#111111]">
-              Terms of Service
-            </Link>
-          </div>
+        <div className="flex items-center gap-4 text-xs text-[#6B6B6B]">
+          <Link href="/privacy" className="font-medium hover:text-[#111111]">
+            Privacy Policy
+          </Link>
+          <Link href="/terms" className="font-medium hover:text-[#111111]">
+            Terms of Service
+          </Link>
         </div>
       </footer>
     </main>
